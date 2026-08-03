@@ -97,6 +97,7 @@ export function ExportMenu() {
             size="sm"
             loading={busy === entry.kind}
             onClick={() => void download(entry.kind, entry.title)}
+            aria-label={`Download ${entry.title}`}
           >
             <Download aria-hidden="true" />
             Download

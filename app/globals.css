@@ -1,0 +1,186 @@
+@import 'tailwindcss';
+
+/*
+ * ApplyPilot design tokens.
+ *
+ * Neutral slate base, one teal accent, four semantic status colours.
+ * Every token is defined for both light and dark so the whole product can be
+ * re-themed from this one file.
+ */
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --ap-canvas: 210 20% 98%;
+    --ap-surface: 0 0% 100%;
+    --ap-surface-muted: 210 20% 96%;
+    --ap-surface-raised: 0 0% 100%;
+
+    --ap-text: 215 28% 17%;
+    --ap-text-muted: 215 16% 42%;
+    --ap-text-subtle: 215 14% 50%;
+    --ap-text-inverted: 0 0% 100%;
+
+    --ap-border: 214 20% 88%;
+    --ap-border-strong: 214 18% 74%;
+
+    --ap-accent: 184 68% 28%;
+    --ap-accent-hover: 184 68% 23%;
+    --ap-accent-soft: 184 55% 94%;
+    --ap-accent-text: 184 70% 22%;
+
+    --ap-success: 152 56% 27%;
+    --ap-success-soft: 152 50% 94%;
+    --ap-warning: 30 84% 31%;
+    --ap-warning-soft: 38 92% 93%;
+    --ap-danger: 0 68% 41%;
+    --ap-danger-soft: 0 78% 96%;
+    --ap-info: 218 62% 40%;
+    --ap-info-soft: 216 90% 96%;
+
+    --ap-focus: 199 89% 36%;
+
+    --ap-radius: 0.5rem;
+    --ap-radius-lg: 0.75rem;
+
+    --ap-shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.06);
+    --ap-shadow-md: 0 2px 8px -2px rgb(15 23 42 / 0.1);
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --ap-canvas: 222 32% 10%;
+    --ap-surface: 222 28% 13%;
+    --ap-surface-muted: 222 24% 17%;
+    --ap-surface-raised: 222 26% 16%;
+
+    --ap-text: 210 30% 94%;
+    --ap-text-muted: 214 16% 74%;
+    --ap-text-subtle: 214 14% 64%;
+    --ap-text-inverted: 222 40% 10%;
+
+    --ap-border: 218 20% 25%;
+    --ap-border-strong: 218 18% 40%;
+
+    --ap-accent: 180 62% 48%;
+    --ap-accent-hover: 180 62% 56%;
+    --ap-accent-soft: 187 45% 18%;
+    --ap-accent-text: 180 62% 74%;
+
+    --ap-success: 152 48% 56%;
+    --ap-success-soft: 155 35% 17%;
+    --ap-warning: 38 78% 62%;
+    --ap-warning-soft: 34 40% 18%;
+    --ap-danger: 0 76% 70%;
+    --ap-danger-soft: 0 35% 20%;
+    --ap-info: 214 82% 72%;
+    --ap-info-soft: 216 40% 20%;
+
+    --ap-focus: 199 89% 62%;
+
+    --ap-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --ap-shadow-md: 0 2px 10px -2px rgb(0 0 0 / 0.5);
+  }
+}
+
+@theme inline {
+  --color-canvas: hsl(var(--ap-canvas));
+  --color-surface: hsl(var(--ap-surface));
+  --color-surface-muted: hsl(var(--ap-surface-muted));
+  --color-surface-raised: hsl(var(--ap-surface-raised));
+
+  --color-ink: hsl(var(--ap-text));
+  --color-ink-muted: hsl(var(--ap-text-muted));
+  --color-ink-subtle: hsl(var(--ap-text-subtle));
+  --color-ink-inverted: hsl(var(--ap-text-inverted));
+
+  --color-line: hsl(var(--ap-border));
+  --color-line-strong: hsl(var(--ap-border-strong));
+
+  --color-accent: hsl(var(--ap-accent));
+  --color-accent-hover: hsl(var(--ap-accent-hover));
+  --color-accent-soft: hsl(var(--ap-accent-soft));
+  --color-accent-text: hsl(var(--ap-accent-text));
+
+  --color-success: hsl(var(--ap-success));
+  --color-success-soft: hsl(var(--ap-success-soft));
+  --color-warning: hsl(var(--ap-warning));
+  --color-warning-soft: hsl(var(--ap-warning-soft));
+  --color-danger: hsl(var(--ap-danger));
+  --color-danger-soft: hsl(var(--ap-danger-soft));
+  --color-info: hsl(var(--ap-info));
+  --color-info-soft: hsl(var(--ap-info-soft));
+
+  --color-focus: hsl(var(--ap-focus));
+
+  --radius: var(--ap-radius);
+  --radius-lg: var(--ap-radius-lg);
+
+  --shadow-card: var(--ap-shadow-sm);
+  --shadow-raised: var(--ap-shadow-md);
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--ap-border));
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: hsl(var(--ap-canvas));
+    color: hsl(var(--ap-text));
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* A single, consistently visible focus treatment across the whole product. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ap-focus));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: -0.011em;
+  }
+
+  ::placeholder {
+    color: hsl(var(--ap-text-subtle));
+  }
+}
+
+@layer utilities {
+  .ap-skeleton {
+    background-color: hsl(var(--ap-surface-muted));
+    animation: ap-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes ap-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+}
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

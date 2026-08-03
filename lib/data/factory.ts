@@ -48,6 +48,18 @@ export async function requireWorkspace(): Promise<Workspace> {
   return { session, repository: await getRepositoryForSession(session) };
 }
 
+/**
+ * Like `requireWorkspace`, but also insists the student has finished
+ * onboarding. Pages that need a profile (a time zone, a display name) use this
+ * so they never have to handle a half-configured account.
+ */
+export async function requireProfile() {
+  const { session, repository } = await requireWorkspace();
+  const profile = await repository.getProfile(session.userId);
+  if (!profile?.onboardingCompleted) redirect('/onboarding');
+  return { session, repository, profile };
+}
+
 /** Same as `requireWorkspace`, but returns null instead of redirecting. */
 export async function optionalWorkspace(): Promise<Workspace | null> {
   const session = await getSession();

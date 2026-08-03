@@ -3,6 +3,13 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = Number(process.env.PORT ?? 3100);
 const baseURL = `http://127.0.0.1:${PORT}`;
 
+/**
+ * Some environments ship a Chromium build that does not match the revision this
+ * Playwright version would download. Set PLAYWRIGHT_CHROMIUM_PATH to reuse it
+ * instead of fetching another copy.
+ */
+const executablePath = process.env.PLAYWRIGHT_CHROMIUM_PATH || undefined;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -20,12 +27,12 @@ export default defineConfig({
   projects: [
     {
       name: 'desktop',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], launchOptions: { executablePath } },
       testIgnore: /mobile\.spec\.ts/,
     },
     {
       name: 'mobile',
-      use: { ...devices['Pixel 7'] },
+      use: { ...devices['Pixel 7'], launchOptions: { executablePath } },
       testMatch: /mobile\.spec\.ts/,
     },
   ],

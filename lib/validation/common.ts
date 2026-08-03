@@ -5,6 +5,28 @@ import { isValidTimeZone } from '@/lib/dates/format';
 
 export const idSchema = z.string().uuid('That record id is not valid.');
 
+/**
+ * An id that may be absent. An unselected `<select>` submits `""`, which is
+ * neither a uuid nor null, so it has to be normalised before validation.
+ */
+export const optionalId = z
+  .union([z.string(), z.null(), z.undefined()])
+  .transform((value) => (value === null || value === undefined || value === '' ? null : value))
+  .refine((value) => value === null || z.uuid().safeParse(value).success, {
+    message: 'That record could not be found.',
+  });
+
+/** Same problem as `optionalId`, for enum-backed selects with a blank option. */
+export function optionalEnum<const T extends readonly [string, ...string[]]>(values: T) {
+  return z
+    .union([z.string(), z.null(), z.undefined()])
+    .transform((value) => (value === null || value === undefined || value === '' ? null : value))
+    .refine((value) => value === null || (values as readonly string[]).includes(value), {
+      message: 'That is not one of the available options.',
+    })
+    .transform((value) => value as T[number] | null);
+}
+
 /** Trims, then converts "" to null. HTML forms submit empty strings, not null. */
 export function optionalText(max: number, label = 'This field') {
   return z

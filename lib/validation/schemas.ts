@@ -37,6 +37,8 @@ import {
   checkboxBoolean,
   idSchema,
   optionalEmail,
+  optionalEnum,
+  optionalId,
   optionalIsoDate,
   optionalMoney,
   optionalPositiveInt,
@@ -72,7 +74,7 @@ export const profileSchema = z.object({
       message: 'Enter a graduation year between 2000 and 2100.',
     })
     .nullable(),
-  currentGrade: z.enum(CURRENT_GRADES).nullable().default(null),
+  currentGrade: optionalEnum(CURRENT_GRADES),
   region: optionalText(120, 'Region'),
   intendedMajors: tagList(20, 80),
   interests: tagList(30, 80),
@@ -89,7 +91,7 @@ export const collegeSchema = z.object({
   city: optionalText(120, 'City'),
   stateOrRegion: optionalText(120, 'State or region'),
   country: optionalText(120, 'Country'),
-  institutionType: z.enum(INSTITUTION_TYPES).nullable().default(null),
+  institutionType: optionalEnum(INSTITUTION_TYPES),
   websiteUrl: optionalUrl,
   admissionsUrl: optionalUrl,
   financialAidUrl: optionalUrl,
@@ -148,8 +150,8 @@ export const requirementStatusUpdateSchema = z.object({
 export const essaySchema = z
   .object({
     title: requiredText(TEXT_LIMITS.shortName, 'Essay title'),
-    applicationId: idSchema.nullable().default(null),
-    collegeId: idSchema.nullable().default(null),
+    applicationId: optionalId,
+    collegeId: optionalId,
     prompt: optionalText(TEXT_LIMITS.prompt, 'Prompt'),
     limitType: z.enum(LIMIT_TYPES).default('words'),
     limitValue: optionalPositiveInt(100_000, 'Limit'),
@@ -264,10 +266,10 @@ export const taskSchema = z.object({
   dueAt: optionalIsoDate,
   timeZone: timeZoneSchema,
   priority: z.enum(TASK_PRIORITIES).default('medium'),
-  applicationId: idSchema.nullable().default(null),
-  essayId: idSchema.nullable().default(null),
-  scholarshipId: idSchema.nullable().default(null),
-  recommenderId: idSchema.nullable().default(null),
+  applicationId: optionalId,
+  essayId: optionalId,
+  scholarshipId: optionalId,
+  recommenderId: optionalId,
 });
 export type TaskInput = z.input<typeof taskSchema>;
 
@@ -294,10 +296,10 @@ export const coachRequestSchema = z.object({
   message: z.string().trim().max(AI_INPUT_LIMITS.message, 'That message is too long to send.'),
   /** Explicit opt-in per request. Nothing is attached unless the student says so. */
   includeDraft: z.boolean().default(false),
-  essayId: idSchema.nullable().default(null),
-  activityId: idSchema.nullable().default(null),
-  collegeId: idSchema.nullable().default(null),
-  sessionId: idSchema.nullable().default(null),
+  essayId: optionalId,
+  activityId: optionalId,
+  collegeId: optionalId,
+  sessionId: optionalId,
 });
 export type CoachRequestInput = z.input<typeof coachRequestSchema>;
 

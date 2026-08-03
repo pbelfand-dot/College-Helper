@@ -14,7 +14,8 @@ export const optionalId = z
   .transform((value) => (value === null || value === undefined || value === '' ? null : value))
   .refine((value) => value === null || z.uuid().safeParse(value).success, {
     message: 'That record could not be found.',
-  });
+  })
+  .default(null);
 
 /** Same problem as `optionalId`, for enum-backed selects with a blank option. */
 export function optionalEnum<const T extends readonly [string, ...string[]]>(values: T) {
@@ -24,7 +25,8 @@ export function optionalEnum<const T extends readonly [string, ...string[]]>(val
     .refine((value) => value === null || (values as readonly string[]).includes(value), {
       message: 'That is not one of the available options.',
     })
-    .transform((value) => value as T[number] | null);
+    .transform((value) => value as T[number] | null)
+    .default(null);
 }
 
 /** Trims, then converts "" to null. HTML forms submit empty strings, not null. */
@@ -103,7 +105,8 @@ export const optionalPositiveInt = (max: number, label = 'This number') =>
     .refine((value) => value === null || (Number.isInteger(value) && value >= 0 && value <= max), {
       message: `${label} must be a whole number between 0 and ${max}.`,
     })
-    .nullable();
+    .nullable()
+    .default(null);
 
 export const optionalMoney = z
   .union([z.string(), z.number(), z.null(), z.undefined()])
@@ -115,7 +118,8 @@ export const optionalMoney = z
   .refine((value) => value === null || (value >= 0 && value <= 10_000_000), {
     message: 'Enter an amount between 0 and 10,000,000.',
   })
-  .nullable();
+  .nullable()
+  .default(null);
 
 /**
  * Accepts either a real array (JSON body) or a comma-separated string (form
@@ -139,7 +143,8 @@ export function tagList(maxItems: number, maxLength: number) {
     })
     .refine((value) => value.every((item) => item.length <= maxLength), {
       message: `Each entry must be ${maxLength} characters or fewer.`,
-    });
+    })
+    .default([]);
 }
 
 /** Checkbox inputs submit "on"/absent; JSON submits real booleans. */
@@ -149,4 +154,5 @@ export const checkboxBoolean = z
     if (typeof value === 'boolean') return value;
     if (value === null || value === undefined) return false;
     return value === 'on' || value === 'true' || value === '1';
-  });
+  })
+  .default(false);

@@ -45,7 +45,7 @@ export type UserProfileRow = {
   onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type CollegeRow = {
   id: string;
@@ -69,7 +69,7 @@ export type CollegeRow = {
   last_verified_at: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type ApplicationRow = {
   id: string;
@@ -89,7 +89,7 @@ export type ApplicationRow = {
   notes: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type RequirementRow = {
   id: string;
@@ -105,7 +105,7 @@ export type RequirementRow = {
   sort_order: number;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type EssayRow = {
   id: string;
@@ -123,7 +123,7 @@ export type EssayRow = {
   due_at: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type EssayVersionRow = {
   id: string;
@@ -133,7 +133,7 @@ export type EssayVersionRow = {
   source: VersionSource;
   note: string | null;
   created_at: string;
-}
+};
 
 export type ActivityRow = {
   id: string;
@@ -154,7 +154,7 @@ export type ActivityRow = {
   sort_order: number;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type RecommenderRow = {
   id: string;
@@ -171,14 +171,14 @@ export type RecommenderRow = {
   notes: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type ApplicationRecommenderRow = {
   user_id: string;
   application_id: string;
   recommender_id: string;
   status: RecommenderStatus;
-}
+};
 
 export type ScholarshipRow = {
   id: string;
@@ -196,7 +196,7 @@ export type ScholarshipRow = {
   notes: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type TaskRow = {
   id: string;
@@ -214,7 +214,7 @@ export type TaskRow = {
   priority: TaskPriority;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type CoachSessionRow = {
   id: string;
@@ -223,7 +223,7 @@ export type CoachSessionRow = {
   title: string;
   created_at: string;
   updated_at: string;
-}
+};
 
 export type CoachMessageRow = {
   id: string;
@@ -233,7 +233,7 @@ export type CoachMessageRow = {
   content: string;
   metadata: Record<string, unknown> | null;
   created_at: string;
-}
+};
 
 /** Columns the database fills in itself. */
 type Generated = 'id' | 'created_at' | 'updated_at';
@@ -254,7 +254,9 @@ type Flatten<T> = { [K in keyof T]: T[K] };
  */
 type TableDefinition<Row extends { user_id: string }> = {
   Row: Flatten<Row>;
-  Insert: Flatten<Partial<Omit<Row, 'user_id' | Extract<Generated, keyof Row>>> & { user_id: string }>;
+  Insert: Flatten<
+    Partial<Omit<Row, 'user_id' | Extract<Generated, keyof Row>>> & { user_id: string }
+  >;
   Update: Partial<Omit<Row, 'user_id'>>;
   Relationships: [];
 };

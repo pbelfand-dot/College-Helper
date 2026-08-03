@@ -33,15 +33,13 @@ export function UpcomingDeadlineList({
   max?: number;
 }) {
   if (items.length === 0) {
-    return (
-      <EmptyState icon={CalendarCheck2} title={emptyTitle} description={emptyDescription} />
-    );
+    return <EmptyState icon={CalendarCheck2} title={emptyTitle} description={emptyDescription} />;
   }
 
   const shown = typeof max === 'number' ? items.slice(0, max) : items;
 
   return (
-    <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+    <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
       {shown.map((item) => {
         const days = daysUntil(item.dueAt, item.timeZone, now) ?? 0;
         const passed = new Date(item.dueAt).getTime() < now.getTime();
@@ -50,15 +48,15 @@ export function UpcomingDeadlineList({
           <li key={item.id}>
             <Link
               href={item.href}
-              className="flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-surface-muted sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+              className="hover:bg-surface-muted flex flex-col gap-1 px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-4"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="truncate text-sm font-medium text-ink">{item.title}</span>
+                  <span className="text-ink truncate text-sm font-medium">{item.title}</span>
                   <Badge tone="neutral">{kindLabels[item.kind]}</Badge>
                 </div>
                 {item.subtitle ? (
-                  <p className="mt-0.5 truncate text-xs text-ink-muted">{item.subtitle}</p>
+                  <p className="text-ink-muted mt-0.5 truncate text-xs">{item.subtitle}</p>
                 ) : null}
               </div>
 
@@ -66,10 +64,10 @@ export function UpcomingDeadlineList({
                 <p
                   className={
                     passed
-                      ? 'text-xs font-medium text-danger'
+                      ? 'text-danger text-xs font-medium'
                       : days <= 3
-                        ? 'text-xs font-medium text-warning'
-                        : 'text-xs font-medium text-ink'
+                        ? 'text-warning text-xs font-medium'
+                        : 'text-ink text-xs font-medium'
                   }
                 >
                   {passed
@@ -82,7 +80,7 @@ export function UpcomingDeadlineList({
                         ? 'Due tomorrow'
                         : `Due in ${days} days`}
                 </p>
-                <p className="text-xs text-ink-muted">
+                <p className="text-ink-muted text-xs">
                   {item.allDay
                     ? formatAllDayDeadline(item.dueAt, item.timeZone)
                     : formatDeadline(item.dueAt, item.timeZone)}

@@ -106,11 +106,11 @@ const MODE_ROLES: Record<CoachMode, string> = {
   'essay-brainstorm':
     'You are helping the student find what to write about, using only experiences they have described to you.',
   'essay-feedback':
-    'You are giving a careful reader\'s response to a draft the student wrote. Your job is to make the student a better reviser, not to revise it for them.',
+    "You are giving a careful reader's response to a draft the student wrote. Your job is to make the student a better reviser, not to revise it for them.",
   'activity-description':
     'You are helping the student fit a truthful activity description into a tight character limit.',
   'deadline-planning':
-    'You are turning the student\'s existing deadlines into a realistic order of work.',
+    "You are turning the student's existing deadlines into a realistic order of work.",
 };
 
 export function buildPrompt(context: PromptContext): BuiltPrompt {

@@ -71,10 +71,10 @@ export default async function ApplicationDetailPage({
         }
       />
 
-      <section className="grid gap-4 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-4 sm:grid-cols-2">
+      <section className="border-line bg-surface grid gap-4 rounded-[var(--radius-lg)] border px-4 py-4 sm:grid-cols-2">
         <div>
-          <h2 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">Deadline</h2>
-          <p className="mt-1 text-sm text-ink">
+          <h2 className="text-ink-muted text-xs font-semibold tracking-wide uppercase">Deadline</h2>
+          <p className="text-ink mt-1 text-sm">
             {application.deadlineAt
               ? formatDeadline(application.deadlineAt, application.deadlineTimeZone)
               : 'No deadline recorded yet.'}
@@ -86,7 +86,7 @@ export default async function ApplicationDetailPage({
               showDate={false}
             />
           </div>
-          <p className="mt-2 text-xs text-ink-subtle">
+          <p className="text-ink-subtle mt-2 text-xs">
             {applicationRoundHints[application.applicationRound]} Confirm the exact date and time on
             the college&rsquo;s official site.
           </p>
@@ -94,7 +94,9 @@ export default async function ApplicationDetailPage({
 
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
           <Detail label="Fee">
-            {application.feeAmount === null ? 'Not recorded' : `$${application.feeAmount.toFixed(2)}`}
+            {application.feeAmount === null
+              ? 'Not recorded'
+              : `$${application.feeAmount.toFixed(2)}`}
           </Detail>
           <Detail label="Fee waiver">{feeWaiverStatusLabels[application.feeWaiverStatus]}</Detail>
           <Detail label="Testing plan">{testingPlanLabels[application.testingPlan]}</Detail>
@@ -121,9 +123,9 @@ export default async function ApplicationDetailPage({
 
       <section className="grid gap-8 lg:grid-cols-2">
         <div className="flex flex-col gap-3">
-          <h2 className="text-base font-semibold text-ink">Linked essays</h2>
+          <h2 className="text-ink text-base font-semibold">Linked essays</h2>
           {linkedEssays.length === 0 ? (
-            <p className="rounded-[var(--radius-lg)] border border-dashed border-line-strong px-4 py-5 text-sm text-ink-muted">
+            <p className="border-line-strong text-ink-muted rounded-[var(--radius-lg)] border border-dashed px-4 py-5 text-sm">
               No essays are linked to this application. Open an essay from the{' '}
               <Link href="/essays" className="underline underline-offset-2">
                 Essays page
@@ -131,16 +133,18 @@ export default async function ApplicationDetailPage({
               and choose this application to connect them.
             </p>
           ) : (
-            <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+            <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
               {linkedEssays.map((essay) => (
                 <li key={essay.id}>
                   <Link
                     href={`/essays/${essay.id}`}
-                    className="block px-4 py-3 transition-colors hover:bg-surface-muted"
+                    className="hover:bg-surface-muted block px-4 py-3 transition-colors"
                   >
-                    <p className="text-sm font-medium text-ink">{essay.title}</p>
-                    <p className="mt-0.5 text-xs text-ink-muted">
-                      {essay.dueAt ? `Due ${formatDate(essay.dueAt, profile.timeZone)}` : 'No due date'}
+                    <p className="text-ink text-sm font-medium">{essay.title}</p>
+                    <p className="text-ink-muted mt-0.5 text-xs">
+                      {essay.dueAt
+                        ? `Due ${formatDate(essay.dueAt, profile.timeZone)}`
+                        : 'No due date'}
                     </p>
                   </Link>
                 </li>
@@ -159,24 +163,24 @@ export default async function ApplicationDetailPage({
 
       <section className="grid gap-6 sm:grid-cols-2">
         <div>
-          <h2 className="text-sm font-semibold text-ink">Financial aid checklist</h2>
-          <p className="mt-1.5 text-sm text-ink-muted">
+          <h2 className="text-ink text-sm font-semibold">Financial aid checklist</h2>
+          <p className="text-ink-muted mt-1.5 text-sm">
             Aid tasks live in the requirement checklist above — add them with the type “Financial
             aid” so they count towards this application&rsquo;s progress.
           </p>
-          <p className="mt-2 text-xs text-ink-subtle">
-            ApplyPilot does not give financial or legal advice. Aid rules are specific to each college
-            and to your situation; use the college&rsquo;s official forms and their financial aid
-            office.
+          <p className="text-ink-subtle mt-2 text-xs">
+            ApplyPilot does not give financial or legal advice. Aid rules are specific to each
+            college and to your situation; use the college&rsquo;s official forms and their
+            financial aid office.
           </p>
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold text-ink">Your notes</h2>
+          <h2 className="text-ink text-sm font-semibold">Your notes</h2>
           {application.notes ? (
-            <p className="mt-1.5 text-sm whitespace-pre-wrap text-ink-muted">{application.notes}</p>
+            <p className="text-ink-muted mt-1.5 text-sm whitespace-pre-wrap">{application.notes}</p>
           ) : (
-            <p className="mt-1.5 text-sm text-ink-subtle italic">Nothing written here yet.</p>
+            <p className="text-ink-subtle mt-1.5 text-sm italic">Nothing written here yet.</p>
           )}
         </div>
       </section>
@@ -187,8 +191,8 @@ export default async function ApplicationDetailPage({
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs text-ink-muted">{label}</dt>
-      <dd className="mt-0.5 text-ink">{children}</dd>
+      <dt className="text-ink-muted text-xs">{label}</dt>
+      <dd className="text-ink mt-0.5">{children}</dd>
     </div>
   );
 }

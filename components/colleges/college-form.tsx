@@ -34,11 +34,14 @@ export function CollegeForm({
   onDone?: (id: string) => void;
   submitLabel?: string;
 }) {
-  const [state, formAction] = useActionState(async (previous: ActionResult<{ id: string }> | null, formData: FormData) => {
-    const result = await action(previous, formData);
-    if (result.ok && onDone) onDone(result.data.id);
-    return result;
-  }, null);
+  const [state, formAction] = useActionState(
+    async (previous: ActionResult<{ id: string }> | null, formData: FormData) => {
+      const result = await action(previous, formData);
+      if (result.ok && onDone) onDone(result.data.id);
+      return result;
+    },
+    null,
+  );
 
   const errors = state && !state.ok ? state.fieldErrors : undefined;
 
@@ -51,7 +54,12 @@ export function CollegeForm({
       <FieldSet legend="The basics">
         <Field id="name" label="College name" required error={errors?.name}>
           {(props) => (
-            <Input {...props} name="name" defaultValue={college?.name} placeholder="University of Michigan" />
+            <Input
+              {...props}
+              name="name"
+              defaultValue={college?.name}
+              placeholder="University of Michigan"
+            />
           )}
         </Field>
 
@@ -74,7 +82,11 @@ export function CollegeForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <Field id="institutionType" label="Type" error={errors?.institutionType}>
             {(props) => (
-              <Select {...props} name="institutionType" defaultValue={college?.institutionType ?? ''}>
+              <Select
+                {...props}
+                name="institutionType"
+                defaultValue={college?.institutionType ?? ''}
+              >
                 <option value="">Not recorded</option>
                 {INSTITUTION_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -92,7 +104,11 @@ export function CollegeForm({
             error={errors?.listStatus}
           >
             {(props) => (
-              <Select {...props} name="listStatus" defaultValue={college?.listStatus ?? 'exploring'}>
+              <Select
+                {...props}
+                name="listStatus"
+                defaultValue={college?.listStatus ?? 'exploring'}
+              >
                 {LIST_STATUSES.map((status) => (
                   <option key={status} value={status}>
                     {listStatusLabels[status]}
@@ -120,7 +136,9 @@ export function CollegeForm({
             description="Anything that helps you sort: small-campus, close-to-home, needs-a-visit."
             error={errors?.tags}
           >
-            {(props) => <Input {...props} name="tags" defaultValue={college?.tags.join(', ') ?? ''} />}
+            {(props) => (
+              <Input {...props} name="tags" defaultValue={college?.tags.join(', ') ?? ''} />
+            )}
           </Field>
         </div>
       </FieldSet>
@@ -192,18 +210,30 @@ export function CollegeForm({
           description="Your honest reasons. These are the raw material for a “why this college” essay later."
           error={errors?.fitNotes}
         >
-          {(props) => <Textarea {...props} name="fitNotes" rows={3} defaultValue={college?.fitNotes ?? ''} />}
+          {(props) => (
+            <Textarea {...props} name="fitNotes" rows={3} defaultValue={college?.fitNotes ?? ''} />
+          )}
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field id="academicNotes" label="Academic notes" error={errors?.academicNotes}>
             {(props) => (
-              <Textarea {...props} name="academicNotes" rows={3} defaultValue={college?.academicNotes ?? ''} />
+              <Textarea
+                {...props}
+                name="academicNotes"
+                rows={3}
+                defaultValue={college?.academicNotes ?? ''}
+              />
             )}
           </Field>
           <Field id="campusNotes" label="Campus and life notes" error={errors?.campusNotes}>
             {(props) => (
-              <Textarea {...props} name="campusNotes" rows={3} defaultValue={college?.campusNotes ?? ''} />
+              <Textarea
+                {...props}
+                name="campusNotes"
+                rows={3}
+                defaultValue={college?.campusNotes ?? ''}
+              />
             )}
           </Field>
         </div>
@@ -214,7 +244,14 @@ export function CollegeForm({
           description="Questions to ask, not answers to assume. ApplyPilot does not give financial advice."
           error={errors?.costNotes}
         >
-          {(props) => <Textarea {...props} name="costNotes" rows={3} defaultValue={college?.costNotes ?? ''} />}
+          {(props) => (
+            <Textarea
+              {...props}
+              name="costNotes"
+              rows={3}
+              defaultValue={college?.costNotes ?? ''}
+            />
+          )}
         </Field>
 
         <Field
@@ -223,7 +260,14 @@ export function CollegeForm({
           description="Which page, which visit, which conversation. Future you will want to know."
           error={errors?.sourceNotes}
         >
-          {(props) => <Textarea {...props} name="sourceNotes" rows={2} defaultValue={college?.sourceNotes ?? ''} />}
+          {(props) => (
+            <Textarea
+              {...props}
+              name="sourceNotes"
+              rows={2}
+              defaultValue={college?.sourceNotes ?? ''}
+            />
+          )}
         </Field>
       </FieldSet>
 

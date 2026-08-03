@@ -99,7 +99,10 @@ export async function buildCoachContext(request: CoachContextRequest): Promise<C
         });
       }
       if (essay.outline) {
-        material.push({ label: 'Your outline', content: clamp(essay.outline, AI_INPUT_LIMITS.context) });
+        material.push({
+          label: 'Your outline',
+          content: clamp(essay.outline, AI_INPUT_LIMITS.context),
+        });
       }
       // The draft is the most private thing here, so it is opt-in per request.
       if (request.includeDraft && essay.currentDraft.trim().length > 0) {
@@ -147,7 +150,9 @@ export async function buildCoachContext(request: CoachContextRequest): Promise<C
         label: `Your notes on ${college.name}`,
         content: clamp(
           [
-            college.majors.length > 0 ? `Majors you are looking at: ${college.majors.join(', ')}` : '',
+            college.majors.length > 0
+              ? `Majors you are looking at: ${college.majors.join(', ')}`
+              : '',
             college.fitNotes ? `Why it interests you: ${college.fitNotes}` : '',
             college.academicNotes ? `Academic notes: ${college.academicNotes}` : '',
             college.campusNotes ? `Campus notes: ${college.campusNotes}` : '',

@@ -98,9 +98,12 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
       listStatus: 'applying',
       fitNotes:
         'The open curriculum is appealing because I genuinely do not know if I want policy or science yet.',
-      academicNotes: 'Ask about the mentored advanced project and whether first-years can join labs.',
-      campusNotes: 'Small town. Need to be honest with myself about whether that is fine for four years.',
-      costNotes: 'Meets full demonstrated need according to their site — verify what that means for us.',
+      academicNotes:
+        'Ask about the mentored advanced project and whether first-years can join labs.',
+      campusNotes:
+        'Small town. Need to be honest with myself about whether that is fine for four years.',
+      costNotes:
+        'Meets full demonstrated need according to their site — verify what that means for us.',
       sourceNotes: VERIFY_NOTE,
       lastVerifiedAt: subDays(now, 20).toISOString(),
     },
@@ -160,8 +163,10 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
       majors: ['Watershed Science', 'Ecosystem Science'],
       tags: ['outdoors', 'field-work'],
       listStatus: 'considering',
-      fitNotes: 'Watershed science is the closest thing to the exact work I did at the creek project.',
-      academicNotes: 'Email the department and ask what a first-year field course actually looks like.',
+      fitNotes:
+        'Watershed science is the closest thing to the exact work I did at the creek project.',
+      academicNotes:
+        'Email the department and ask what a first-year field course actually looks like.',
       campusNotes: 'Have not visited. Watch a student vlog and take notes.',
       costNotes: 'Out-of-state. Check whether there is a regional exchange programme.',
       sourceNotes: VERIFY_NOTE,
@@ -588,7 +593,8 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
       limitValue: 250,
       brainstormNotes:
         'Real reasons, not brochure reasons: the open curriculum, and the fact that I do not know yet whether I want the science or the policy side.',
-      outline: '1. The specific thing I do not know yet.\n2. Why an open curriculum helps with that.\n3. One concrete thing I would do there.',
+      outline:
+        '1. The specific thing I do not know yet.\n2. Why an open curriculum helps with that.\n3. One concrete thing I would do there.',
       currentDraft:
         'I do not know yet whether the work I want to do is science or policy, and every time I try to decide I end up back at the same creek.',
       status: 'drafting',
@@ -600,7 +606,8 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
       applicationId: APPLICATION(1),
       collegeId: COLLEGE(1),
       title: 'Michigan — community essay',
-      prompt: 'Describe a community you belong to and your place within it. Verify the current prompt.',
+      prompt:
+        'Describe a community you belong to and your place within it. Verify the current prompt.',
       limitType: 'words',
       limitValue: 300,
       brainstormNotes:
@@ -697,10 +704,12 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
       hoursPerWeek: 12,
       weeksPerYear: 16,
       gradeLevels: ['11', '12'],
-      description: 'Weekend and summer shifts: customer questions, watering schedules, inventory counts.',
+      description:
+        'Weekend and summer shifts: customer questions, watering schedules, inventory counts.',
       descriptionLimit: 150,
       impactEvidence: 'Two summers. Manager is Dana R.',
-      reflectionNotes: 'Worth including — it is a real time commitment, even if it is not "impressive".',
+      reflectionNotes:
+        'Worth including — it is a real time commitment, even if it is not "impressive".',
       sortOrder: 2,
     },
     {
@@ -755,7 +764,8 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
       description: 'Concert band clarinet, three years.',
       descriptionLimit: 150,
       impactEvidence: null,
-      reflectionNotes: 'Dropped it junior year for robotics. No regrets, but three years is three years.',
+      reflectionNotes:
+        'Dropped it junior year for robotics. No regrets, but three years is three years.',
       sortOrder: 5,
     },
   ];
@@ -788,7 +798,8 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
       status: 'materials-sent',
       followUpAt: dayIn(4, now),
       thankYouStatus: 'not-sent',
-      notes: 'Sent him the engineering notebook link. He asked for a resume by the end of the month.',
+      notes:
+        'Sent him the engineering notebook link. He asked for a resume by the end of the month.',
     },
     {
       ...base,
@@ -807,9 +818,24 @@ export function buildDemoBundle(now: Date = new Date()): UserDataBundle {
   ];
 
   const applicationRecommenders: UserDataBundle['applicationRecommenders'] = [
-    { userId: DEMO_USER_ID, applicationId: APPLICATION(1), recommenderId: RECOMMENDER(1), status: 'agreed' },
-    { userId: DEMO_USER_ID, applicationId: APPLICATION(1), recommenderId: RECOMMENDER(3), status: 'asked' },
-    { userId: DEMO_USER_ID, applicationId: APPLICATION(2), recommenderId: RECOMMENDER(1), status: 'agreed' },
+    {
+      userId: DEMO_USER_ID,
+      applicationId: APPLICATION(1),
+      recommenderId: RECOMMENDER(1),
+      status: 'agreed',
+    },
+    {
+      userId: DEMO_USER_ID,
+      applicationId: APPLICATION(1),
+      recommenderId: RECOMMENDER(3),
+      status: 'asked',
+    },
+    {
+      userId: DEMO_USER_ID,
+      applicationId: APPLICATION(2),
+      recommenderId: RECOMMENDER(1),
+      status: 'agreed',
+    },
     {
       userId: DEMO_USER_ID,
       applicationId: APPLICATION(2),

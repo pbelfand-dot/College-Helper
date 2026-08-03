@@ -35,8 +35,18 @@ export function useAutosave({
   const savedValue = React.useRef(value);
   const inFlight = React.useRef(false);
   const pendingValue = React.useRef<string | null>(null);
+
+  // Latest-callback ref, updated after render rather than during it.
   const onSaveRef = React.useRef(onSave);
-  onSaveRef.current = onSave;
+  React.useEffect(() => {
+    onSaveRef.current = onSave;
+  }, [onSave]);
+
+  /**
+   * Held in a ref so the queued-save path can re-enter without the callback
+   * having to reference itself before it is declared.
+   */
+  const flushRef = React.useRef<(next: string) => Promise<void>>(async () => {});
 
   const flush = React.useCallback(async (next: string) => {
     if (inFlight.current) {
@@ -60,8 +70,12 @@ export function useAutosave({
     // Someone typed while we were saving — save that too.
     const queued = pendingValue.current;
     pendingValue.current = null;
-    if (queued !== null && queued !== next) void flush(queued);
+    if (queued !== null && queued !== next) void flushRef.current(queued);
   }, []);
+
+  React.useEffect(() => {
+    flushRef.current = flush;
+  }, [flush]);
 
   React.useEffect(() => {
     if (!enabled) return;

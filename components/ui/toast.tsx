@@ -62,15 +62,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             )}
           >
             {message.tone === 'success' ? (
-              <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />
+              <CheckCircle2 className="text-success mt-0.5 size-4 shrink-0" aria-hidden="true" />
             ) : (
-              <AlertCircle className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden="true" />
+              <AlertCircle className="text-danger mt-0.5 size-4 shrink-0" aria-hidden="true" />
             )}
             <span className="flex-1">{message.text}</span>
             <button
               type="button"
               onClick={() => dismiss(message.id)}
-              className="rounded p-0.5 text-ink-subtle transition-colors hover:text-ink"
+              className="text-ink-subtle hover:text-ink rounded p-0.5 transition-colors"
               aria-label="Dismiss notification"
             >
               <X className="size-3.5" aria-hidden="true" />

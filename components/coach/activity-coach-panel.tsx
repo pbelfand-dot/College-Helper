@@ -43,7 +43,7 @@ export function ActivityCoachPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-ink-muted">
+      <p className="text-ink-muted text-xs">
         The coach works from what you already wrote for this activity. It will suggest shorter
         wordings and flag vague phrasing — it will not add hours, headcounts or totals you did not
         state.
@@ -93,10 +93,10 @@ export function ActivityCoachPanel({
       ) : null}
 
       {output ? (
-        <div className="flex flex-col gap-5 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-4">
+        <div className="border-line bg-surface flex flex-col gap-5 rounded-[var(--radius-lg)] border px-4 py-4">
           {output.possibleVersions.length > 0 ? (
             <div>
-              <h4 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+              <h4 className="text-ink-muted text-xs font-semibold tracking-wide uppercase">
                 Shorter versions of your own wording
               </h4>
               <ul className="mt-2 flex flex-col gap-2">
@@ -105,15 +105,15 @@ export function ActivityCoachPanel({
                   return (
                     <li
                       key={index}
-                      className="rounded-[var(--radius)] border border-line bg-surface-muted px-3 py-2.5"
+                      className="border-line bg-surface-muted rounded-[var(--radius)] border px-3 py-2.5"
                     >
-                      <p className="text-sm text-ink">{version.text}</p>
+                      <p className="text-ink text-sm">{version.text}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
                         <span
                           className={
                             over
-                              ? 'text-xs font-medium text-warning'
-                              : 'text-xs tabular-nums text-ink-muted'
+                              ? 'text-warning text-xs font-medium'
+                              : 'text-ink-muted text-xs tabular-nums'
                           }
                         >
                           {version.characterCount} / {descriptionLimit} characters
@@ -125,20 +125,19 @@ export function ActivityCoachPanel({
                   );
                 })}
               </ul>
-              <p className="mt-2 text-xs text-ink-subtle">
+              <p className="text-ink-subtle mt-2 text-xs">
                 Copy one in if you like it. Nothing is changed in your activity unless you paste it
                 yourself.
               </p>
             </div>
           ) : null}
 
-          <CoachSection title="Verbs your own account supports" items={output.supportedActionVerbs} />
-          <CoachSection title="What earns the space" items={output.detailsWorthPrioritising} />
           <CoachSection
-            title="Vague wording"
-            items={output.weakOrVagueWording}
-            tone="warning"
+            title="Verbs your own account supports"
+            items={output.supportedActionVerbs}
           />
+          <CoachSection title="What earns the space" items={output.detailsWorthPrioritising} />
+          <CoachSection title="Vague wording" items={output.weakOrVagueWording} tone="warning" />
           <CautionList title="Check before you submit" items={output.unsupportedClaimWarnings} />
 
           <CoachDisclaimer offline={coach.result?.provider.offline ?? true} />

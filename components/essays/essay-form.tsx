@@ -7,7 +7,14 @@ import { Field, FieldSet } from '@/components/ui/field';
 import { Input, Select, Textarea } from '@/components/ui/input';
 import { ErrorState } from '@/components/ui/states';
 import { essayStatusLabels } from '@/lib/domain/labels';
-import { ESSAY_STATUSES, LIMIT_TYPES, type Application, type College, type Essay, type LimitType } from '@/lib/domain/types';
+import {
+  ESSAY_STATUSES,
+  LIMIT_TYPES,
+  type Application,
+  type College,
+  type Essay,
+  type LimitType,
+} from '@/lib/domain/types';
 import { toDateInputValue } from '@/lib/dates/format';
 import type { ActionResult } from '@/lib/utils/result';
 
@@ -78,7 +85,9 @@ export function EssayForm({
           description="Paste the prompt exactly as the college words it. Check it against the official site — prompts change between years."
           error={errors?.prompt}
         >
-          {(props) => <Textarea {...props} name="prompt" rows={3} defaultValue={essay?.prompt ?? ''} />}
+          {(props) => (
+            <Textarea {...props} name="prompt" rows={3} defaultValue={essay?.prompt ?? ''} />
+          )}
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-3">

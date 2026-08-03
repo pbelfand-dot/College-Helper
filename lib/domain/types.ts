@@ -60,7 +60,12 @@ export const DECISION_RESULTS = [
 ] as const;
 export type DecisionResult = (typeof DECISION_RESULTS)[number];
 
-export const FEE_WAIVER_STATUSES = ['not-applicable', 'considering', 'requested', 'approved'] as const;
+export const FEE_WAIVER_STATUSES = [
+  'not-applicable',
+  'considering',
+  'requested',
+  'approved',
+] as const;
 export type FeeWaiverStatus = (typeof FEE_WAIVER_STATUSES)[number];
 
 export const TESTING_PLANS = [
@@ -90,7 +95,12 @@ export const REQUIREMENT_TYPES = [
 ] as const;
 export type RequirementType = (typeof REQUIREMENT_TYPES)[number];
 
-export const REQUIREMENT_STATUSES = ['not-started', 'in-progress', 'complete', 'not-needed'] as const;
+export const REQUIREMENT_STATUSES = [
+  'not-started',
+  'in-progress',
+  'complete',
+  'not-needed',
+] as const;
 export type RequirementStatus = (typeof REQUIREMENT_STATUSES)[number];
 
 export const ESSAY_STATUSES = [

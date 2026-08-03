@@ -65,12 +65,12 @@ export function EssayCoachPanel({
   return (
     <section className="flex flex-col gap-4" aria-labelledby="coach-heading">
       <div>
-        <h2 id="coach-heading" className="text-base font-semibold text-ink">
+        <h2 id="coach-heading" className="text-ink text-base font-semibold">
           Ask the coach
         </h2>
-        <p className="mt-0.5 text-xs text-ink-muted">
-          It asks questions and points at specifics. It will not write the essay for you, and it will
-          never add an experience you have not described.
+        <p className="text-ink-muted mt-0.5 text-xs">
+          It asks questions and points at specifics. It will not write the essay for you, and it
+          will never add an experience you have not described.
         </p>
       </div>
 
@@ -93,7 +93,9 @@ export function EssayCoachPanel({
 
       <Field
         id="coach-message"
-        label={mode === 'essay-brainstorm' ? 'What are you thinking about?' : 'What should I look at?'}
+        label={
+          mode === 'essay-brainstorm' ? 'What are you thinking about?' : 'What should I look at?'
+        }
         description={
           mode === 'essay-brainstorm'
             ? 'Describe a real experience in your own words. The more concrete you are, the more useful the questions will be.'
@@ -116,7 +118,7 @@ export function EssayCoachPanel({
       </Field>
 
       {mode === 'essay-brainstorm' ? (
-        <label className="flex items-start gap-2.5 text-sm text-ink">
+        <label className="text-ink flex items-start gap-2.5 text-sm">
           <input
             type="checkbox"
             checked={includeDraft}
@@ -126,7 +128,7 @@ export function EssayCoachPanel({
           />
           <span>
             Include my current draft
-            <span className="block text-xs text-ink-muted">
+            <span className="text-ink-muted block text-xs">
               {hasDraft
                 ? 'Off by default. Your draft stays private unless you tick this.'
                 : 'You have not written a draft yet.'}
@@ -134,7 +136,7 @@ export function EssayCoachPanel({
           </span>
         </label>
       ) : (
-        <p className="text-xs text-ink-muted">
+        <p className="text-ink-muted text-xs">
           Feedback needs your draft, so it will be included in this request.
         </p>
       )}
@@ -157,7 +159,7 @@ export function EssayCoachPanel({
       </div>
 
       {needsDraft ? (
-        <p className="text-xs text-warning">
+        <p className="text-warning text-xs">
           Write something in the draft tab first — feedback needs words to respond to.
         </p>
       ) : null}
@@ -179,7 +181,7 @@ export function EssayCoachPanel({
       ) : null}
 
       {coach.status === 'done' && coach.result ? (
-        <div className="flex flex-col gap-5 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-4">
+        <div className="border-line bg-surface flex flex-col gap-5 rounded-[var(--radius-lg)] border px-4 py-4">
           {mode === 'essay-brainstorm' ? (
             <BrainstormResult output={coach.result.result as EssayBrainstormOutput} />
           ) : (
@@ -216,9 +218,7 @@ function ModeButton({
       onClick={onClick}
       className={cn(
         'flex flex-1 items-start gap-2.5 rounded-[var(--radius)] border px-3 py-2.5 text-left transition-colors',
-        active
-          ? 'border-accent bg-accent-soft'
-          : 'border-line bg-surface hover:border-line-strong',
+        active ? 'border-accent bg-accent-soft' : 'border-line bg-surface hover:border-line-strong',
       )}
     >
       <Icon
@@ -229,7 +229,7 @@ function ModeButton({
         <span className={cn('block text-sm font-medium', active ? 'text-accent-text' : 'text-ink')}>
           {title}
         </span>
-        <span className="block text-xs text-ink-muted">{description}</span>
+        <span className="text-ink-muted block text-xs">{description}</span>
       </span>
     </button>
   );
@@ -247,11 +247,7 @@ function BrainstormResult({ output }: { output: EssayBrainstormOutput }) {
       <CoachSection title="Moments that could be scenes" items={output.scenesToExplore} />
       <CoachSection title="Where something shifts" items={output.tensionsOrChanges} />
       <CoachSection title="What this suggests you value" items={output.valuesDemonstrated} />
-      <CoachSection
-        title="Clichés to steer around"
-        items={output.clichesToAvoid}
-        tone="warning"
-      />
+      <CoachSection title="Clichés to steer around" items={output.clichesToAvoid} tone="warning" />
     </>
   );
 }
@@ -266,10 +262,10 @@ function FeedbackResult({
   return (
     <>
       <div>
-        <h4 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+        <h4 className="text-ink-muted text-xs font-semibold tracking-wide uppercase">
           Reading it through
         </h4>
-        <p className="mt-1.5 text-sm text-ink">{output.overallReading}</p>
+        <p className="text-ink mt-1.5 text-sm">{output.overallReading}</p>
         <div className="mt-2">
           <CopyButton text={output.overallReading} label="Copy this note" />
         </div>
@@ -286,10 +282,10 @@ function FeedbackResult({
 
       {output.sentenceSuggestions.length > 0 ? (
         <div>
-          <h4 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          <h4 className="text-ink-muted text-xs font-semibold tracking-wide uppercase">
             Sentence-level options
           </h4>
-          <p className="mt-1 text-xs text-ink-muted">
+          <p className="text-ink-muted mt-1 text-xs">
             These replace one sentence at a time, and only if you press the button. Your draft is
             versioned, so you can undo any of it.
           </p>

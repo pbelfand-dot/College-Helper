@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Field } from './field';
 import { Select } from './input';
 import { DEFAULT_TIME_ZONE } from '@/lib/dates/format';
+import { useClientValue } from '@/lib/utils/use-client-value';
 
 /**
  * Time-zone picker.
@@ -51,6 +52,14 @@ const COMMON_ZONES = [
   'UTC',
 ];
 
+function detectTimeZone(): string | null {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+  } catch {
+    return null;
+  }
+}
+
 export function TimeZoneField({
   id = 'timeZone',
   name = 'timeZone',
@@ -66,15 +75,9 @@ export function TimeZoneField({
   defaultValue?: string | null;
   error?: string | string[];
 }) {
-  const [detected, setDetected] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    try {
-      setDetected(Intl.DateTimeFormat().resolvedOptions().timeZone);
-    } catch {
-      setDetected(null);
-    }
-  }, []);
+  // The browser's zone is external state, so it is read through
+  // useSyncExternalStore rather than copied into React state in an effect.
+  const detected = useClientValue<string | null>(detectTimeZone, null);
 
   const zones = React.useMemo(() => {
     const all = new Set(COMMON_ZONES);

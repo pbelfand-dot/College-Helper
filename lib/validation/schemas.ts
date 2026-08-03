@@ -70,9 +70,12 @@ export const profileSchema = z.object({
       const parsed = Number(value);
       return Number.isFinite(parsed) ? parsed : Number.NaN;
     })
-    .refine((value) => value === null || (Number.isInteger(value) && value >= 2000 && value <= 2100), {
-      message: 'Enter a graduation year between 2000 and 2100.',
-    })
+    .refine(
+      (value) => value === null || (Number.isInteger(value) && value >= 2000 && value <= 2100),
+      {
+        message: 'Enter a graduation year between 2000 and 2100.',
+      },
+    )
     .nullable(),
   currentGrade: optionalEnum(CURRENT_GRADES),
   region: optionalText(120, 'Region'),
@@ -195,7 +198,11 @@ export const activitySchema = z.object({
   hoursPerWeek: optionalPositiveInt(168, 'Hours per week'),
   weeksPerYear: optionalPositiveInt(52, 'Weeks per year'),
   gradeLevels: tagList(8, 20),
-  description: z.string().trim().max(TEXT_LIMITS.description, 'Description is too long.').default(''),
+  description: z
+    .string()
+    .trim()
+    .max(TEXT_LIMITS.description, 'Description is too long.')
+    .default(''),
   /** Configurable: application portals change their limits, so we never hardcode one. */
   descriptionLimit: z
     .union([z.string(), z.number()])

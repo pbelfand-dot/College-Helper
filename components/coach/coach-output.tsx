@@ -28,15 +28,15 @@ export function CoachSection({
   if (items.length === 0) {
     return emptyNote ? (
       <div>
-        <h4 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">{title}</h4>
-        <p className="mt-1 text-sm text-ink-subtle italic">{emptyNote}</p>
+        <h4 className="text-ink-muted text-xs font-semibold tracking-wide uppercase">{title}</h4>
+        <p className="text-ink-subtle mt-1 text-sm italic">{emptyNote}</p>
       </div>
     ) : null;
   }
 
   return (
     <div>
-      <h4 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">{title}</h4>
+      <h4 className="text-ink-muted text-xs font-semibold tracking-wide uppercase">{title}</h4>
       <ul
         className={cn(
           'mt-1.5 flex flex-col gap-1.5 text-sm',
@@ -66,15 +66,15 @@ export function CautionList({
   if (items.length === 0) return null;
   return (
     <div>
-      <h4 className="text-xs font-semibold tracking-wide text-warning uppercase">{title}</h4>
+      <h4 className="text-warning text-xs font-semibold tracking-wide uppercase">{title}</h4>
       <ul className="mt-1.5 flex flex-col gap-2">
         {items.map((item, index) => (
           <li
             key={index}
-            className="rounded-[var(--radius)] border border-warning/35 bg-warning-soft px-3 py-2 text-sm"
+            className="border-warning/35 bg-warning-soft rounded-[var(--radius)] border px-3 py-2 text-sm"
           >
-            <p className="font-medium text-ink">{item.claim}</p>
-            <p className="mt-0.5 text-ink-muted">{item.why}</p>
+            <p className="text-ink font-medium">{item.claim}</p>
+            <p className="text-ink-muted mt-0.5">{item.why}</p>
           </li>
         ))}
       </ul>
@@ -100,14 +100,16 @@ export function SentenceSuggestion({
   onApply?: (original: string, suggestion: string) => void;
 }) {
   return (
-    <li className="rounded-[var(--radius)] border border-line bg-surface px-3 py-2.5">
-      <p className="text-xs text-ink-subtle">You wrote</p>
-      <p className="mt-0.5 text-sm text-ink-muted line-through decoration-ink-subtle/50">{original}</p>
+    <li className="border-line bg-surface rounded-[var(--radius)] border px-3 py-2.5">
+      <p className="text-ink-subtle text-xs">You wrote</p>
+      <p className="text-ink-muted decoration-ink-subtle/50 mt-0.5 text-sm line-through">
+        {original}
+      </p>
 
-      <p className="mt-2.5 text-xs text-ink-subtle">One option</p>
-      <p className="mt-0.5 text-sm text-ink">{suggestion}</p>
+      <p className="text-ink-subtle mt-2.5 text-xs">One option</p>
+      <p className="text-ink mt-0.5 text-sm">{suggestion}</p>
 
-      <p className="mt-2 text-xs text-ink-muted">{why}</p>
+      <p className="text-ink-muted mt-2 text-xs">{why}</p>
 
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         <CopyButton text={suggestion} />
@@ -145,7 +147,7 @@ export function CopyButton({ text, label = 'Copy' }: { text: string; label?: str
 /** Footer shown under every coach response. */
 export function CoachDisclaimer({ offline }: { offline: boolean }) {
   return (
-    <div className="flex flex-col gap-1.5 border-t border-line pt-3 text-xs text-ink-muted">
+    <div className="border-line text-ink-muted flex flex-col gap-1.5 border-t pt-3 text-xs">
       <p className="flex flex-wrap items-center gap-2">
         <Badge tone={offline ? 'neutral' : 'accent'}>
           {offline ? 'Offline coach' : 'AI coach'}

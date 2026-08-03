@@ -46,10 +46,10 @@ export function Field({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="text-sm font-medium text-ink">
+        <label htmlFor={id} className="text-ink text-sm font-medium">
           {label}
           {required ? (
-            <span className="ml-1 text-danger" aria-hidden="true">
+            <span className="text-danger ml-1" aria-hidden="true">
               *
             </span>
           ) : null}
@@ -59,7 +59,7 @@ export function Field({
       </div>
 
       {description ? (
-        <p id={descriptionId} className="text-xs text-ink-muted">
+        <p id={descriptionId} className="text-ink-muted text-xs">
           {description}
         </p>
       ) : null}
@@ -72,7 +72,7 @@ export function Field({
       })}
 
       {hasError ? (
-        <p id={errorId} className="text-xs font-medium text-danger" role="alert">
+        <p id={errorId} className="text-danger text-xs font-medium" role="alert">
           {messages.join(' ')}
         </p>
       ) : null}
@@ -94,8 +94,8 @@ export function FieldSet({
 }) {
   return (
     <fieldset className={cn('flex flex-col gap-4', className)}>
-      <legend className="text-sm font-semibold text-ink">{legend}</legend>
-      {description ? <p className="-mt-2 text-xs text-ink-muted">{description}</p> : null}
+      <legend className="text-ink text-sm font-semibold">{legend}</legend>
+      {description ? <p className="text-ink-muted -mt-2 text-xs">{description}</p> : null}
       {children}
     </fieldset>
   );

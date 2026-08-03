@@ -8,12 +8,12 @@
 
 import { differenceInCalendarDays } from 'date-fns';
 import { parseIso } from '@/lib/dates/format';
+import { type DeadlineItem, collectDeadlines, groupDeadlines } from './deadlines';
 import {
-  type DeadlineItem,
-  collectDeadlines,
-  groupDeadlines,
-} from './deadlines';
-import { summarizeApplications, summarizeEssayProgress, type ApplicationProgress } from './progress';
+  summarizeApplications,
+  summarizeEssayProgress,
+  type ApplicationProgress,
+} from './progress';
 import type {
   Activity,
   Application,
@@ -150,7 +150,8 @@ export function buildDashboardSummary(input: DashboardInput): DashboardSummary {
     activities: {
       total: input.activities.length,
       missingDescription: input.activities.filter((a) => a.description.trim().length === 0).length,
-      overLimit: input.activities.filter((a) => [...a.description].length > a.descriptionLimit).length,
+      overLimit: input.activities.filter((a) => [...a.description].length > a.descriptionLimit)
+        .length,
     },
     recommendationFollowUps,
     scholarshipsNeedingAction,

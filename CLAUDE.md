@@ -4,18 +4,18 @@ ApplyPilot is an independent college-application planning and coaching tool.
 
 ## Core commands
 
-| Purpose            | Command                                                  |
-| ------------------ | -------------------------------------------------------- |
-| Development server | `npm run dev`                                             |
-| Lint               | `npm run lint`                                            |
-| Type check         | `npm run typecheck`                                       |
-| Unit tests         | `npm run test`                                            |
-| End-to-end tests   | `npm run test:e2e`                                        |
-| Production build   | `npm run build`                                           |
-| Format             | `npm run format`                                          |
-| Format check       | `npm run format:check`                                    |
-| Database setup     | `npm run db:setup` (prints the migration steps)           |
-| Demo-data seed     | Automatic on first request. Reset from `/settings`.       |
+| Purpose            | Command                                             |
+| ------------------ | --------------------------------------------------- |
+| Development server | `npm run dev`                                       |
+| Lint               | `npm run lint`                                      |
+| Type check         | `npm run typecheck`                                 |
+| Unit tests         | `npm run test`                                      |
+| End-to-end tests   | `npm run test:e2e`                                  |
+| Production build   | `npm run build`                                     |
+| Format             | `npm run format`                                    |
+| Format check       | `npm run format:check`                              |
+| Database setup     | `npm run db:setup` (prints the migration steps)     |
+| Demo-data seed     | Automatic on first request. Reset from `/settings`. |
 
 Update this section whenever commands change.
 

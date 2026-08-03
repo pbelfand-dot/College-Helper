@@ -28,7 +28,7 @@ export function Counter({
     <span
       className={cn(
         'text-xs tabular-nums',
-        state.over ? 'font-medium text-warning' : state.nearLimit ? 'text-ink' : 'text-ink-muted',
+        state.over ? 'text-warning font-medium' : state.nearLimit ? 'text-ink' : 'text-ink-muted',
         className,
       )}
       aria-live="polite"

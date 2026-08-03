@@ -64,12 +64,12 @@ export function VersionHistory({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs text-ink-muted">
-        Restoring an old version never deletes a newer one. Your current draft is saved first, so you
-        can always go back again.
+      <p className="text-ink-muted text-xs">
+        Restoring an old version never deletes a newer one. Your current draft is saved first, so
+        you can always go back again.
       </p>
 
-      <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+      <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
         {versions.map((version) => {
           const isCurrent = version.content === currentDraft;
           const expanded = previewId === version.id;
@@ -79,7 +79,7 @@ export function VersionHistory({
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-medium text-ink">
+                    <span className="text-ink text-sm font-medium">
                       {formatDate(version.createdAt, timeZone)}
                     </span>
                     <Badge tone={version.source === 'manual' ? 'accent' : 'neutral'}>
@@ -87,7 +87,7 @@ export function VersionHistory({
                     </Badge>
                     {isCurrent ? <Badge tone="success">Matches current draft</Badge> : null}
                   </div>
-                  <p className="mt-0.5 text-xs text-ink-muted">
+                  <p className="text-ink-muted mt-0.5 text-xs">
                     {countWords(version.content)} words
                     {version.note ? ` · ${version.note}` : ''}
                   </p>
@@ -135,8 +135,8 @@ export function VersionHistory({
               </div>
 
               {expanded ? (
-                <div className="mt-3 max-h-64 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface-muted px-3 py-2.5">
-                  <p className="text-sm whitespace-pre-wrap text-ink">
+                <div className="border-line bg-surface-muted mt-3 max-h-64 overflow-y-auto rounded-[var(--radius)] border px-3 py-2.5">
+                  <p className="text-ink text-sm whitespace-pre-wrap">
                     {version.content || <span className="text-ink-subtle italic">Empty draft</span>}
                   </p>
                 </div>

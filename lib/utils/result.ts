@@ -7,8 +7,7 @@
  */
 
 export type ActionResult<T = undefined> =
-  | { ok: true; data: T }
-  | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
+  { ok: true; data: T } | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
 
 export function ok(): ActionResult<undefined>;
 export function ok<T>(data: T): ActionResult<T>;

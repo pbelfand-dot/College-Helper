@@ -6,10 +6,10 @@ export function Logo({ className, href = '/dashboard' }: { className?: string; h
   return (
     <Link
       href={href}
-      className={cn('inline-flex items-center gap-2 rounded text-ink', className)}
+      className={cn('text-ink inline-flex items-center gap-2 rounded', className)}
       aria-label="ApplyPilot home"
     >
-      <span className="flex size-7 items-center justify-center rounded-[var(--radius)] bg-accent text-white">
+      <span className="bg-accent flex size-7 items-center justify-center rounded-[var(--radius)] text-white">
         <Compass className="size-4" aria-hidden="true" />
       </span>
       <span className="text-[15px] font-semibold tracking-tight">ApplyPilot</span>

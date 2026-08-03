@@ -53,14 +53,14 @@ export function ApplicationRecommenders({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-ink">Recommenders</h2>
+        <h2 className="text-ink text-base font-semibold">Recommenders</h2>
         <Button asChild variant="ghost" size="sm">
           <Link href="/recommendations">Manage</Link>
         </Button>
       </div>
 
       {recommenders.length === 0 ? (
-        <p className="rounded-[var(--radius-lg)] border border-dashed border-line-strong px-4 py-5 text-sm text-ink-muted">
+        <p className="border-line-strong text-ink-muted rounded-[var(--radius-lg)] border border-dashed px-4 py-5 text-sm">
           You have not added any recommenders yet. Add them on the{' '}
           <Link href="/recommendations" className="underline underline-offset-2">
             Recommendations page
@@ -68,7 +68,7 @@ export function ApplicationRecommenders({
           , then link the ones this college needs.
         </p>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+        <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
           {recommenders.map((recommender) => {
             const isLinked = linked.has(recommender.id);
             return (
@@ -77,10 +77,14 @@ export function ApplicationRecommenders({
                 className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-ink">{recommender.name}</p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-                    <span>{recommender.organizationOrSubject ?? recommender.role ?? 'Recommender'}</span>
-                    {recommender.dueAt ? <span>· due {formatDate(recommender.dueAt, timeZone)}</span> : null}
+                  <p className="text-ink text-sm font-medium">{recommender.name}</p>
+                  <p className="text-ink-muted mt-0.5 flex flex-wrap items-center gap-2 text-xs">
+                    <span>
+                      {recommender.organizationOrSubject ?? recommender.role ?? 'Recommender'}
+                    </span>
+                    {recommender.dueAt ? (
+                      <span>· due {formatDate(recommender.dueAt, timeZone)}</span>
+                    ) : null}
                   </p>
                 </div>
 
@@ -101,7 +105,7 @@ export function ApplicationRecommenders({
         </ul>
       )}
 
-      <p className="text-xs text-ink-subtle">
+      <p className="text-ink-subtle text-xs">
         ApplyPilot tracks that you asked and when it is due. It never stores the letter — that stays
         between your recommender and the college.
       </p>

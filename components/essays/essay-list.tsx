@@ -180,10 +180,10 @@ export function EssayList({
               <li key={essay.id}>
                 <Link
                   href={`/essays/${essay.id}`}
-                  className="flex h-full flex-col gap-2.5 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-4 transition-colors hover:border-line-strong"
+                  className="border-line bg-surface hover:border-line-strong flex h-full flex-col gap-2.5 rounded-[var(--radius-lg)] border px-4 py-4 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-sm font-semibold text-ink">{essay.title}</h3>
+                    <h3 className="text-ink text-sm font-semibold">{essay.title}</h3>
                     <EssayStatusBadge status={essay.status} />
                   </div>
 
@@ -194,20 +194,20 @@ export function EssayList({
                   )}
 
                   {essay.prompt ? (
-                    <p className="line-clamp-2 text-xs text-ink-muted">{essay.prompt}</p>
+                    <p className="text-ink-muted line-clamp-2 text-xs">{essay.prompt}</p>
                   ) : null}
 
                   <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-1">
                     <span
                       className={
                         count.over
-                          ? 'text-xs font-medium text-warning'
-                          : 'text-xs tabular-nums text-ink-muted'
+                          ? 'text-warning text-xs font-medium'
+                          : 'text-ink-muted text-xs tabular-nums'
                       }
                     >
                       {formatCount(count)}
                     </span>
-                    <span className="text-xs text-ink-subtle">
+                    <span className="text-ink-subtle text-xs">
                       Edited {formatDate(essay.updatedAt, timeZone)}
                     </span>
                   </div>

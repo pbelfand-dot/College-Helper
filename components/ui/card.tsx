@@ -9,7 +9,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        'rounded-[var(--radius-lg)] border border-line bg-surface shadow-[var(--shadow-card)]',
+        'border-line bg-surface rounded-[var(--radius-lg)] border shadow-[var(--shadow-card)]',
         className,
       )}
       {...props}
@@ -22,11 +22,14 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 }
 
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('text-base font-semibold text-ink', className)} {...props} />;
+  return <h3 className={cn('text-ink text-base font-semibold', className)} {...props} />;
 }
 
-export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-sm text-ink-muted', className)} {...props} />;
+export function CardDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={cn('text-ink-muted text-sm', className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -35,6 +38,9 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 
 export function CardFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('flex items-center gap-2 border-t border-line px-5 py-3', className)} {...props} />
+    <div
+      className={cn('border-line flex items-center gap-2 border-t px-5 py-3', className)}
+      {...props}
+    />
   );
 }

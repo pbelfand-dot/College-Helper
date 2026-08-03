@@ -99,10 +99,7 @@ export function formatRelative(
 }
 
 /** For `<input type="datetime-local">`, which expects local wall time. */
-export function toDateTimeLocalValue(
-  value: string | null | undefined,
-  timeZone: string,
-): string {
+export function toDateTimeLocalValue(value: string | null | undefined, timeZone: string): string {
   const date = parseIso(value ?? null);
   if (!date) return '';
   try {

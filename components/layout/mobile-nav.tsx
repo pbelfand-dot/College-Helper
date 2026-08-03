@@ -21,19 +21,22 @@ export function MobileTopBar() {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
 
-  // Close the menu when navigation actually happens.
-  React.useEffect(() => {
+  // Close the menu when navigation actually happens. Adjusting state during
+  // render on a changed prop is the documented alternative to an effect here.
+  const [lastPath, setLastPath] = React.useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-surface px-4 py-2.5 lg:hidden">
+    <header className="border-line bg-surface sticky top-0 z-40 flex items-center justify-between border-b px-4 py-2.5 lg:hidden">
       <Logo />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius)] border border-line-strong px-3 py-1.5 text-sm text-ink transition-colors hover:bg-surface-muted"
+            className="border-line-strong text-ink hover:bg-surface-muted inline-flex items-center gap-1.5 rounded-[var(--radius)] border px-3 py-1.5 text-sm transition-colors"
           >
             <Menu className="size-4" aria-hidden="true" />
             Menu
@@ -56,7 +59,7 @@ export function MobileTopBar() {
                         className={cn(
                           'flex items-center gap-2.5 rounded-[var(--radius)] px-3 py-2.5 text-sm transition-colors',
                           active
-                            ? 'bg-accent-soft font-medium text-accent-text'
+                            ? 'bg-accent-soft text-accent-text font-medium'
                             : 'text-ink hover:bg-surface-muted',
                         )}
                       >
@@ -82,7 +85,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="sticky bottom-0 z-40 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="border-line bg-surface sticky bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <ul className="flex">
         {primaryNavItems.map((item) => {
@@ -94,7 +97,7 @@ export function MobileBottomNav() {
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex flex-col items-center gap-0.5 px-1 py-2 text-[11px] transition-colors',
-                  active ? 'font-medium text-accent-text' : 'text-ink-muted',
+                  active ? 'text-accent-text font-medium' : 'text-ink-muted',
                 )}
               >
                 <item.icon className="size-5" aria-hidden="true" />

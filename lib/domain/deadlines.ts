@@ -19,12 +19,7 @@ import type {
   UserDataBundle,
 } from './types';
 
-export type DeadlineKind =
-  | 'application'
-  | 'essay'
-  | 'recommendation'
-  | 'scholarship'
-  | 'task';
+export type DeadlineKind = 'application' | 'essay' | 'recommendation' | 'scholarship' | 'task';
 
 export interface DeadlineItem {
   id: string;
@@ -66,10 +61,7 @@ export function daysUntil(dueAt: string, timeZone: string, now: Date = new Date(
   }
 }
 
-export function bucketFor(
-  item: DeadlineItem,
-  now: Date = new Date(),
-): DeadlineBucket {
+export function bucketFor(item: DeadlineItem, now: Date = new Date()): DeadlineBucket {
   const due = parseIso(item.dueAt);
   if (!due) return 'later';
   if (due.getTime() < now.getTime()) return 'overdue';

@@ -3,15 +3,31 @@
 import { Monitor, Moon, Sun } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '@/lib/utils/cn';
+import { subscribeToStorage, useClientValue } from '@/lib/utils/use-client-value';
 
 type Theme = 'light' | 'dark' | 'system';
 
 const STORAGE_KEY = 'applypilot-theme';
 
+function isTheme(value: string | null): value is Theme {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
+
+function readStoredTheme(): Theme {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return isTheme(stored) ? stored : 'system';
+  } catch {
+    return 'system';
+  }
+}
+
 function applyTheme(theme: Theme): void {
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const dark = theme === 'dark' || (theme === 'system' && prefersDark);
-  document.documentElement.classList.toggle('dark', dark);
+  document.documentElement.classList.toggle(
+    'dark',
+    theme === 'dark' || (theme === 'system' && prefersDark),
+  );
 }
 
 const options: { value: Theme; label: string; icon: typeof Sun }[] = [
@@ -21,13 +37,21 @@ const options: { value: Theme; label: string; icon: typeof Sun }[] = [
 ];
 
 export function ThemeToggle() {
-  const [theme, setTheme] = React.useState<Theme>('system');
+  /**
+   * The stored preference is browser state, so it is read through
+   * `useSyncExternalStore` rather than copied into React state in an effect.
+   * A change in another tab updates this one.
+   */
+  const [version, setVersion] = React.useState(0);
+  const subscribe = React.useCallback((onChange: () => void) => subscribeToStorage(onChange), []);
+  const getStored = React.useCallback(() => {
+    void version; // re-read after this tab writes a new value
+    return readStoredTheme();
+  }, [version]);
 
-  React.useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark' || stored === 'system') setTheme(stored);
-  }, []);
+  const theme = useClientValue<Theme>(getStored, 'system', subscribe);
 
+  // Keep the document class in step with the OS setting while "system" is active.
   React.useEffect(() => {
     if (theme !== 'system') return;
     const media = window.matchMedia('(prefers-color-scheme: dark)');
@@ -37,13 +61,21 @@ export function ThemeToggle() {
   }, [theme]);
 
   function choose(next: Theme) {
-    setTheme(next);
-    window.localStorage.setItem(STORAGE_KEY, next);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // A blocked localStorage should not stop the theme changing for this page.
+    }
     applyTheme(next);
+    setVersion((current) => current + 1);
   }
 
   return (
-    <div role="radiogroup" aria-label="Colour theme" className="inline-flex gap-1 rounded-[var(--radius)] border border-line-strong p-1">
+    <div
+      role="radiogroup"
+      aria-label="Colour theme"
+      className="border-line-strong inline-flex gap-1 rounded-[var(--radius)] border p-1"
+    >
       {options.map((option) => (
         <button
           key={option.value}
@@ -54,7 +86,7 @@ export function ThemeToggle() {
           className={cn(
             'inline-flex items-center gap-1.5 rounded-[calc(var(--radius)-2px)] px-2.5 py-1.5 text-xs transition-colors',
             theme === option.value
-              ? 'bg-accent-soft font-medium text-accent-text'
+              ? 'bg-accent-soft text-accent-text font-medium'
               : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
           )}
         >

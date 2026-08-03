@@ -136,7 +136,8 @@ export class DemoRepository implements ApplyPilotRepository {
     );
     // Essays survive: a student's writing is never deleted as a side effect.
     data.essays = data.essays.map((essay) =>
-      essay.collegeId === collegeId || (essay.applicationId && applicationIds.includes(essay.applicationId))
+      essay.collegeId === collegeId ||
+      (essay.applicationId && applicationIds.includes(essay.applicationId))
         ? { ...essay, collegeId: null, applicationId: null, updatedAt: this.stamp() }
         : essay,
     );
@@ -166,7 +167,13 @@ export class DemoRepository implements ApplyPilotRepository {
     if (!college) throw notFound('That college');
 
     const now = this.stamp();
-    const application: Application = { ...input, id: newId(), userId, createdAt: now, updatedAt: now };
+    const application: Application = {
+      ...input,
+      id: newId(),
+      userId,
+      createdAt: now,
+      updatedAt: now,
+    };
     data.applications.push(application);
     return this.clone(application);
   }
@@ -450,7 +457,13 @@ export class DemoRepository implements ApplyPilotRepository {
 
   async createRecommender(userId: string, input: NewRecommender): Promise<Recommender> {
     const now = this.stamp();
-    const recommender: Recommender = { ...input, id: newId(), userId, createdAt: now, updatedAt: now };
+    const recommender: Recommender = {
+      ...input,
+      id: newId(),
+      userId,
+      createdAt: now,
+      updatedAt: now,
+    };
     this.data().recommenders.push(recommender);
     return this.clone(recommender);
   }
@@ -494,7 +507,9 @@ export class DemoRepository implements ApplyPilotRepository {
     recommenderId: string,
   ): Promise<ApplicationRecommender> {
     const data = this.data();
-    const application = data.applications.find((a) => a.id === applicationId && a.userId === userId);
+    const application = data.applications.find(
+      (a) => a.id === applicationId && a.userId === userId,
+    );
     if (!application) throw notFound('That application');
     const recommender = data.recommenders.find(
       (r) => r.id === recommenderId && r.userId === userId,

@@ -190,7 +190,9 @@ describe('activitySchema', () => {
   });
 
   it('rejects impossible hours per week', () => {
-    expect(activitySchema.safeParse({ organization: 'A', hoursPerWeek: '200' }).success).toBe(false);
+    expect(activitySchema.safeParse({ organization: 'A', hoursPerWeek: '200' }).success).toBe(
+      false,
+    );
   });
 });
 

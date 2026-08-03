@@ -50,11 +50,7 @@ export function OnboardingForm({ className }: { className?: string }) {
               )}
             </Field>
 
-            <Field
-              id="graduationYear"
-              label="Graduation year"
-              error={fieldErrors?.graduationYear}
-            >
+            <Field id="graduationYear" label="Graduation year" error={fieldErrors?.graduationYear}>
               {(props) => (
                 <Input
                   {...props}
@@ -142,9 +138,9 @@ export function OnboardingForm({ className }: { className?: string }) {
           </Field>
         </FieldSet>
 
-        <div className="flex flex-col gap-3 border-t border-line pt-6">
+        <div className="border-line flex flex-col gap-3 border-t pt-6">
           <SubmitButton />
-          <p className="text-xs text-ink-subtle">
+          <p className="text-ink-subtle text-xs">
             You can change any of this later in Settings, export it, or delete it entirely.
           </p>
         </div>

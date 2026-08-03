@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const profile = await repository.getProfile(session.userId);
 
   return (
-    <div className="flex min-h-dvh bg-canvas">
+    <div className="bg-canvas flex min-h-dvh">
       <Sidebar displayName={profile?.displayName ?? session.email ?? 'Demo student'} />
 
       <div className="flex min-w-0 flex-1 flex-col">

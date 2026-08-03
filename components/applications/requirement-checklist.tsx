@@ -103,8 +103,8 @@ export function RequirementChecklist({
         <DialogHeader>
           <DialogTitle>Add a requirement</DialogTitle>
           <DialogDescription>
-            Add what this college actually asks for, from their own site. Requirements differ between
-            colleges and change between years.
+            Add what this college actually asks for, from their own site. Requirements differ
+            between colleges and change between years.
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
@@ -125,10 +125,10 @@ export function RequirementChecklist({
     <section className="flex flex-col gap-4" aria-labelledby="checklist-heading">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 id="checklist-heading" className="text-base font-semibold text-ink">
+          <h2 id="checklist-heading" className="text-ink text-base font-semibold">
             Requirement checklist
           </h2>
-          <p className="mt-0.5 max-w-prose text-xs text-ink-muted">
+          <p className="text-ink-muted mt-0.5 max-w-prose text-xs">
             You control this list. Progress below is completed required items divided by total
             required items — nothing else goes into it.
           </p>
@@ -136,7 +136,7 @@ export function RequirementChecklist({
         {addButton}
       </div>
 
-      <div className="rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-3.5">
+      <div className="border-line bg-surface rounded-[var(--radius-lg)] border px-4 py-3.5">
         <ProgressBar
           percent={completion.percent}
           completed={completion.completed}
@@ -151,7 +151,7 @@ export function RequirementChecklist({
           action={addButton}
         />
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+        <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
           {optimistic.map((requirement) => {
             const complete = requirement.status === 'complete';
             const excluded = requirement.status === 'not-needed' || !requirement.required;
@@ -179,7 +179,7 @@ export function RequirementChecklist({
                     {requirement.title}
                   </label>
 
-                  <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-ink-muted">
+                  <p className="text-ink-muted mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                     <span>{requirementTypeLabels[requirement.type]}</span>
                     {requirement.required ? null : <span>· Optional</span>}
                     {excluded ? <span>· not counted in progress</span> : null}
@@ -189,7 +189,7 @@ export function RequirementChecklist({
                   </p>
 
                   {requirement.description ? (
-                    <p className="mt-1 text-xs text-ink-muted">{requirement.description}</p>
+                    <p className="text-ink-muted mt-1 text-xs">{requirement.description}</p>
                   ) : null}
 
                   {requirement.sourceUrl ? (
@@ -197,7 +197,7 @@ export function RequirementChecklist({
                       href={requirement.sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs text-accent-text underline-offset-4 hover:underline"
+                      className="text-accent-text mt-1 inline-flex items-center gap-1 text-xs underline-offset-4 hover:underline"
                     >
                       Source
                       <ExternalLink className="size-3" aria-hidden="true" />
@@ -212,7 +212,9 @@ export function RequirementChecklist({
                   <Select
                     id={`status-${requirement.id}`}
                     value={requirement.status}
-                    onChange={(event) => toggle(requirement, event.target.value as RequirementStatus)}
+                    onChange={(event) =>
+                      toggle(requirement, event.target.value as RequirementStatus)
+                    }
                     className="h-8 w-36 text-xs"
                   >
                     {REQUIREMENT_STATUSES.map((value) => (
@@ -255,13 +257,7 @@ export function RequirementChecklist({
   );
 }
 
-function RequirementForm({
-  applicationId,
-  onDone,
-}: {
-  applicationId: string;
-  onDone: () => void;
-}) {
+function RequirementForm({ applicationId, onDone }: { applicationId: string; onDone: () => void }) {
   const [state, formAction] = useActionState(
     async (previous: ActionResult<{ id: string }> | null, formData: FormData) => {
       const result = await createRequirement(previous, formData);
@@ -321,7 +317,7 @@ function RequirementForm({
         {(props) => <Input {...props} name="sourceUrl" type="url" placeholder="https://…" />}
       </Field>
 
-      <label className="flex items-center gap-2.5 text-sm text-ink">
+      <label className="text-ink flex items-center gap-2.5 text-sm">
         <input
           type="checkbox"
           name="required"

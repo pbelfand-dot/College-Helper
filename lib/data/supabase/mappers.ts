@@ -55,7 +55,10 @@ export const toProfile = (row: UserProfileRow): UserProfile => ({
   updatedAt: row.updated_at,
 });
 
-export const fromProfile = (userId: string, value: Omit<UserProfile, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => ({
+export const fromProfile = (
+  userId: string,
+  value: Omit<UserProfile, 'id' | 'userId' | 'createdAt' | 'updatedAt'>,
+) => ({
   user_id: userId,
   display_name: value.displayName,
   graduation_year: value.graduationYear,
@@ -93,7 +96,9 @@ export const toCollege = (row: CollegeRow): College => ({
   updatedAt: row.updated_at,
 });
 
-export const fromCollege = (value: Partial<Omit<College, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>) =>
+export const fromCollege = (
+  value: Partial<Omit<College, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>,
+) =>
   stripUndefined({
     name: value.name,
     city: value.city,
@@ -202,7 +207,9 @@ export const toEssay = (row: EssayRow): Essay => ({
   updatedAt: row.updated_at,
 });
 
-export const fromEssay = (value: Partial<Omit<Essay, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>) =>
+export const fromEssay = (
+  value: Partial<Omit<Essay, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>,
+) =>
   stripUndefined({
     application_id: value.applicationId,
     college_id: value.collegeId,
@@ -301,7 +308,9 @@ export const fromRecommender = (
     notes: value.notes,
   });
 
-export const toApplicationRecommender = (row: ApplicationRecommenderRow): ApplicationRecommender => ({
+export const toApplicationRecommender = (
+  row: ApplicationRecommenderRow,
+): ApplicationRecommender => ({
   userId: row.user_id,
   applicationId: row.application_id,
   recommenderId: row.recommender_id,

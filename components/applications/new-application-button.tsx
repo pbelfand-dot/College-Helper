@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
@@ -45,7 +46,7 @@ export function NewApplicationButton({
   if (colleges.length === 0) {
     return (
       <Button variant="secondary" size={size} asChild>
-        <a href="/colleges">Add a college first</a>
+        <Link href="/colleges">Add a college first</Link>
       </Button>
     );
   }
@@ -62,8 +63,8 @@ export function NewApplicationButton({
         <DialogHeader>
           <DialogTitle>New application</DialogTitle>
           <DialogDescription>
-            We will start you off with three common checklist items. Edit or delete them and add what
-            this college actually asks for.
+            We will start you off with three common checklist items. Edit or delete them and add
+            what this college actually asks for.
           </DialogDescription>
         </DialogHeader>
         <DialogBody>

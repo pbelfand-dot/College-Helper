@@ -1,7 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ChevronDown, ChevronUp, MessageSquareText, Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  MessageSquareText,
+  Pencil,
+  Plus,
+  Sparkles,
+  Trash2,
+} from 'lucide-react';
 import * as React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -48,13 +56,22 @@ export function ActivityList({
   const router = useRouter();
   const { notify } = useToast();
   const [addOpen, setAddOpen] = React.useState(false);
-  const [ordered, setOrdered] = React.useState(() => sortBySortOrder(activities));
   const [movingId, setMovingId] = React.useState<string | null>(null);
 
-  // Re-sync whenever the server sends a new list.
-  React.useEffect(() => {
-    setOrdered(sortBySortOrder(activities));
-  }, [activities]);
+  /**
+   * `override` holds the order being previewed during a drag/move. It is
+   * cleared the moment the server sends a fresh list, so the server always wins
+   * once the save lands.
+   */
+  const [override, setOverride] = React.useState<Activity[] | null>(null);
+  const [syncedFrom, setSyncedFrom] = React.useState(activities);
+  if (syncedFrom !== activities) {
+    setSyncedFrom(activities);
+    setOverride(null);
+  }
+
+  const ordered = override ?? sortBySortOrder(activities);
+  const setOrdered = setOverride;
 
   async function move(activityId: string, direction: 'up' | 'down') {
     const previous = ordered;
@@ -132,7 +149,7 @@ export function ActivityList({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-ink-muted">
+        <p className="text-ink-muted text-xs">
           Listed in your order. Most applications ask you to rank activities by what matters most to
           you — use the arrows to arrange them.
         </p>
@@ -188,10 +205,10 @@ function ActivityRow({
   const over = used > activity.descriptionLimit;
 
   return (
-    <li className="rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-3.5">
+    <li className="border-line bg-surface rounded-[var(--radius-lg)] border px-4 py-3.5">
       <div className="flex gap-3">
         <div className="flex shrink-0 flex-col items-center gap-1">
-          <span className="text-xs font-medium tabular-nums text-ink-subtle">{position}</span>
+          <span className="text-ink-subtle text-xs font-medium tabular-nums">{position}</span>
           <Button
             variant="ghost"
             size="icon"
@@ -217,8 +234,8 @@ function ActivityRow({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="text-sm font-semibold text-ink">{activity.organization}</h3>
-              <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-ink-muted">
+              <h3 className="text-ink text-sm font-semibold">{activity.organization}</h3>
+              <p className="text-ink-muted mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                 {activity.role ? <span>{activity.role}</span> : null}
                 <Badge tone="neutral">{activityCategoryLabels[activity.category]}</Badge>
                 {activity.hoursPerWeek !== null ? (
@@ -230,7 +247,11 @@ function ActivityRow({
                 {activity.startDate ? (
                   <span>
                     {formatDate(activity.startDate, timeZone)} –{' '}
-                    {activity.continues ? 'now' : activity.endDate ? formatDate(activity.endDate, timeZone) : '—'}
+                    {activity.continues
+                      ? 'now'
+                      : activity.endDate
+                        ? formatDate(activity.endDate, timeZone)
+                        : '—'}
                   </span>
                 ) : null}
               </p>
@@ -249,7 +270,12 @@ function ActivityRow({
 
               <Dialog open={editOpen} onOpenChange={setEditOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="size-8" aria-label={`Edit ${activity.organization}`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8"
+                    aria-label={`Edit ${activity.organization}`}
+                  >
                     <Pencil aria-hidden="true" />
                   </Button>
                 </DialogTrigger>
@@ -294,14 +320,16 @@ function ActivityRow({
           </div>
 
           {activity.description ? (
-            <p className="mt-2 text-sm text-ink">{activity.description}</p>
+            <p className="text-ink mt-2 text-sm">{activity.description}</p>
           ) : (
-            <p className="mt-2 text-sm text-ink-subtle italic">No description written yet.</p>
+            <p className="text-ink-subtle mt-2 text-sm italic">No description written yet.</p>
           )}
 
           <p
             className={
-              over ? 'mt-1 text-xs font-medium text-warning' : 'mt-1 text-xs tabular-nums text-ink-muted'
+              over
+                ? 'text-warning mt-1 text-xs font-medium'
+                : 'text-ink-muted mt-1 text-xs tabular-nums'
             }
           >
             {used} / {activity.descriptionLimit} characters
@@ -309,7 +337,7 @@ function ActivityRow({
           </p>
 
           {coachOpen ? (
-            <div className="mt-4 border-t border-line pt-4">
+            <div className="border-line mt-4 border-t pt-4">
               <ActivityCoachPanel
                 activityId={activity.id}
                 descriptionLimit={activity.descriptionLimit}

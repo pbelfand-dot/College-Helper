@@ -89,10 +89,16 @@ export function ApplicationViews({
         <div
           role="radiogroup"
           aria-label="View"
-          className="inline-flex gap-1 rounded-[var(--radius)] border border-line-strong p-1"
+          className="border-line-strong inline-flex gap-1 rounded-[var(--radius)] border p-1"
         >
           <ViewButton current={view} value="table" onSelect={setView} icon={Table2} label="Table" />
-          <ViewButton current={view} value="board" onSelect={setView} icon={LayoutGrid} label="Board" />
+          <ViewButton
+            current={view}
+            value="board"
+            onSelect={setView}
+            icon={LayoutGrid}
+            label="Board"
+          />
         </div>
         <NewApplicationButton colleges={colleges} defaultTimeZone={timeZone} size="sm" />
       </div>
@@ -172,7 +178,7 @@ function ViewButton({
       className={cn(
         'inline-flex items-center gap-1.5 rounded-[calc(var(--radius)-2px)] px-2.5 py-1.5 text-xs transition-colors',
         current === value
-          ? 'bg-accent-soft font-medium text-accent-text'
+          ? 'bg-accent-soft text-accent-text font-medium'
           : 'text-ink-muted hover:bg-surface-muted hover:text-ink',
       )}
     >
@@ -192,13 +198,13 @@ function ApplicationTable({
   timeZone: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-line bg-surface">
+    <div className="border-line bg-surface overflow-x-auto rounded-[var(--radius-lg)] border">
       <table className="w-full min-w-[52rem] border-collapse text-sm">
         <caption className="sr-only">
           Your applications, with round, deadline, status and checklist completion
         </caption>
         <thead>
-          <tr className="border-b border-line text-left">
+          <tr className="border-line border-b text-left">
             <Th>College</Th>
             <Th>Round</Th>
             <Th>Deadline</Th>
@@ -209,11 +215,14 @@ function ApplicationTable({
         </thead>
         <tbody>
           {entries.map(({ application, completion, missing }) => (
-            <tr key={application.id} className="border-b border-line last:border-0 hover:bg-surface-muted">
+            <tr
+              key={application.id}
+              className="border-line hover:bg-surface-muted border-b last:border-0"
+            >
               <td className="px-4 py-3">
                 <Link
                   href={`/applications/${application.id}`}
-                  className="font-medium text-ink underline-offset-4 hover:underline"
+                  className="text-ink font-medium underline-offset-4 hover:underline"
                 >
                   {collegeNames.get(application.collegeId) ?? 'Application'}
                 </Link>
@@ -221,7 +230,7 @@ function ApplicationTable({
                   <DecisionBadge result={application.decisionResult} />
                 </div>
               </td>
-              <td className="px-4 py-3 text-ink-muted">
+              <td className="text-ink-muted px-4 py-3">
                 {applicationRoundLabels[application.applicationRound]}
               </td>
               <td className="px-4 py-3">
@@ -230,7 +239,7 @@ function ApplicationTable({
                     <div className="text-ink">
                       {formatDate(application.deadlineAt, application.deadlineTimeZone)}
                     </div>
-                    <div className="text-xs text-ink-muted">
+                    <div className="text-ink-muted text-xs">
                       <DeadlineBadge
                         dueAt={application.deadlineAt}
                         timeZone={application.deadlineTimeZone}
@@ -254,7 +263,7 @@ function ApplicationTable({
                   label="Checklist"
                 />
               </td>
-              <td className="px-4 py-3 text-xs text-ink-muted">
+              <td className="text-ink-muted px-4 py-3 text-xs">
                 {missing.length === 0 ? (
                   <span className="text-success">Nothing outstanding</span>
                 ) : (
@@ -270,9 +279,10 @@ function ApplicationTable({
           ))}
         </tbody>
       </table>
-      <p className="border-t border-line px-4 py-2 text-xs text-ink-subtle">
-        Deadlines are shown in the time zone you recorded for each college. Times of day appear on the
-        application page. All dates use the {timeZone.replace(/_/g, ' ')} calendar for relative wording.
+      <p className="border-line text-ink-subtle border-t px-4 py-2 text-xs">
+        Deadlines are shown in the time zone you recorded for each college. Times of day appear on
+        the application page. All dates use the {timeZone.replace(/_/g, ' ')} calendar for relative
+        wording.
       </p>
     </div>
   );
@@ -280,7 +290,10 @@ function ApplicationTable({
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th scope="col" className="px-4 py-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+    <th
+      scope="col"
+      className="text-ink-muted px-4 py-2.5 text-xs font-semibold tracking-wide uppercase"
+    >
       {children}
     </th>
   );
@@ -309,29 +322,29 @@ function ApplicationBoard({
           <section
             key={column}
             aria-label={applicationStatusLabels[column]}
-            className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-line bg-surface-muted/50 p-2.5"
+            className="border-line bg-surface-muted/50 flex flex-col gap-2 rounded-[var(--radius-lg)] border p-2.5"
           >
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-semibold tracking-wide text-ink uppercase">
+              <h3 className="text-ink text-xs font-semibold tracking-wide uppercase">
                 {applicationStatusLabels[column]}
               </h3>
               <Badge tone="neutral">{columnEntries.length}</Badge>
             </div>
 
             {columnEntries.length === 0 ? (
-              <p className="px-1 py-3 text-xs text-ink-subtle">Nothing here.</p>
+              <p className="text-ink-subtle px-1 py-3 text-xs">Nothing here.</p>
             ) : (
               <ul className="flex flex-col gap-2">
                 {columnEntries.map(({ application, completion }) => (
                   <li key={application.id}>
                     <Link
                       href={`/applications/${application.id}`}
-                      className="flex flex-col gap-2 rounded-[var(--radius)] border border-line bg-surface px-3 py-2.5 transition-colors hover:border-line-strong"
+                      className="border-line bg-surface hover:border-line-strong flex flex-col gap-2 rounded-[var(--radius)] border px-3 py-2.5 transition-colors"
                     >
-                      <span className="text-sm font-medium text-ink">
+                      <span className="text-ink text-sm font-medium">
                         {collegeNames.get(application.collegeId) ?? 'Application'}
                       </span>
-                      <span className="text-xs text-ink-muted">
+                      <span className="text-ink-muted text-xs">
                         {applicationRoundLabels[application.applicationRound]}
                       </span>
                       {application.deadlineAt ? (

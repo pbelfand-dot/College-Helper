@@ -39,18 +39,19 @@ export default async function CollegeDetailPage({
   const applications = allApplications.filter((a) => a.collegeId === college.id);
   const applicationIds = new Set(applications.map((a) => a.id));
   const relatedEssays = essays.filter(
-    (essay) => essay.collegeId === college.id || (essay.applicationId && applicationIds.has(essay.applicationId)),
+    (essay) =>
+      essay.collegeId === college.id ||
+      (essay.applicationId && applicationIds.has(essay.applicationId)),
   );
 
-  const location = [college.city, college.stateOrRegion, college.country].filter(Boolean).join(', ');
+  const location = [college.city, college.stateOrRegion, college.country]
+    .filter(Boolean)
+    .join(', ');
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        breadcrumbs={[
-          { label: 'Colleges', href: '/colleges' },
-          { label: college.name },
-        ]}
+        breadcrumbs={[{ label: 'Colleges', href: '/colleges' }, { label: college.name }]}
         title={college.name}
         description={
           <span className="flex flex-wrap items-center gap-2">
@@ -58,19 +59,17 @@ export default async function CollegeDetailPage({
             {college.institutionType ? (
               <Badge tone="neutral">{institutionTypeLabels[college.institutionType]}</Badge>
             ) : null}
-            {location ? <span className="text-sm text-ink-muted">{location}</span> : null}
+            {location ? <span className="text-ink-muted text-sm">{location}</span> : null}
           </span>
         }
-        actions={
-          <CollegeActions college={college} />
-        }
+        actions={<CollegeActions college={college} />}
       />
 
-      <section className="rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-3.5">
+      <section className="border-line bg-surface rounded-[var(--radius-lg)] border px-4 py-3.5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-medium text-ink">Information you have saved here</p>
-            <p className="mt-0.5 text-xs text-ink-muted">
+            <p className="text-ink text-xs font-medium">Information you have saved here</p>
+            <p className="text-ink-muted mt-0.5 text-xs">
               {college.lastVerifiedAt
                 ? `You last verified this against official sources on ${formatDate(college.lastVerifiedAt, profile.timeZone)}.`
                 : 'You have not recorded a verification date yet. Deadlines and requirements change — check the official site.'}
@@ -107,7 +106,7 @@ export default async function CollegeDetailPage({
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-base font-semibold text-ink">Applications</h2>
+          <h2 className="text-ink text-base font-semibold">Applications</h2>
           <NewApplicationButton
             colleges={colleges}
             defaultCollegeId={college.id}
@@ -140,11 +139,11 @@ export default async function CollegeDetailPage({
                 <li key={application.id}>
                   <Link
                     href={`/applications/${application.id}`}
-                    className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-3.5 transition-colors hover:border-line-strong sm:flex-row sm:items-center sm:justify-between"
+                    className="border-line bg-surface hover:border-line-strong flex flex-col gap-3 rounded-[var(--radius-lg)] border px-4 py-3.5 transition-colors sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-medium text-ink">
+                        <span className="text-ink text-sm font-medium">
                           {applicationRoundLabels[application.applicationRound]}
                         </span>
                         <ApplicationStatusBadge status={application.status} />
@@ -174,7 +173,7 @@ export default async function CollegeDetailPage({
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-base font-semibold text-ink">Essays for this college</h2>
+          <h2 className="text-ink text-base font-semibold">Essays for this college</h2>
           <Button asChild variant="ghost" size="sm">
             <Link href="/essays">
               <Plus aria-hidden="true" />
@@ -184,20 +183,20 @@ export default async function CollegeDetailPage({
         </div>
 
         {relatedEssays.length === 0 ? (
-          <p className="rounded-[var(--radius-lg)] border border-dashed border-line-strong px-4 py-5 text-sm text-ink-muted">
-            No essays are linked to this college yet. Create one from the Essays page and choose this
-            college, or link an existing essay to one of its applications.
+          <p className="border-line-strong text-ink-muted rounded-[var(--radius-lg)] border border-dashed px-4 py-5 text-sm">
+            No essays are linked to this college yet. Create one from the Essays page and choose
+            this college, or link an existing essay to one of its applications.
           </p>
         ) : (
-          <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+          <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
             {relatedEssays.map((essay) => (
               <li key={essay.id}>
                 <Link
                   href={`/essays/${essay.id}`}
-                  className="block px-4 py-3 transition-colors hover:bg-surface-muted"
+                  className="hover:bg-surface-muted block px-4 py-3 transition-colors"
                 >
-                  <p className="text-sm font-medium text-ink">{essay.title}</p>
-                  <p className="mt-0.5 text-xs text-ink-muted">
+                  <p className="text-ink text-sm font-medium">{essay.title}</p>
+                  <p className="text-ink-muted mt-0.5 text-xs">
                     {essay.limitType === 'none'
                       ? 'No limit set'
                       : `${essay.limitValue ?? 0} ${essay.limitType}`}
@@ -242,13 +241,13 @@ function NoteBlock({
 }) {
   return (
     <div className={className}>
-      <h3 className="text-sm font-semibold text-ink">{title}</h3>
+      <h3 className="text-ink text-sm font-semibold">{title}</h3>
       {body ? (
-        <p className="mt-1.5 text-sm whitespace-pre-wrap text-ink-muted">{body}</p>
+        <p className="text-ink-muted mt-1.5 text-sm whitespace-pre-wrap">{body}</p>
       ) : (
-        <p className="mt-1.5 text-sm text-ink-subtle italic">Nothing written here yet.</p>
+        <p className="text-ink-subtle mt-1.5 text-sm italic">Nothing written here yet.</p>
       )}
-      {footer ? <p className="mt-2 text-xs text-ink-subtle">{footer}</p> : null}
+      {footer ? <p className="text-ink-subtle mt-2 text-xs">{footer}</p> : null}
     </div>
   );
 }

@@ -27,17 +27,17 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border border-dashed border-line-strong bg-surface px-6 py-12 text-center',
+        'border-line-strong bg-surface flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border border-dashed px-6 py-12 text-center',
         className,
       )}
     >
       {Icon ? (
-        <span className="flex size-10 items-center justify-center rounded-full bg-accent-soft text-accent-text">
+        <span className="bg-accent-soft text-accent-text flex size-10 items-center justify-center rounded-full">
           <Icon className="size-5" aria-hidden="true" />
         </span>
       ) : null}
-      <h3 className="text-base font-semibold text-ink">{title}</h3>
-      <p className="max-w-md text-sm text-ink-muted">{description}</p>
+      <h3 className="text-ink text-base font-semibold">{title}</h3>
+      <p className="text-ink-muted max-w-md text-sm">{description}</p>
       {action ? <div className="mt-1">{action}</div> : null}
     </div>
   );
@@ -58,15 +58,15 @@ export function ErrorState({
     <div
       role="alert"
       className={cn(
-        'flex flex-col items-start gap-2 rounded-[var(--radius-lg)] border border-danger/40 bg-danger-soft px-4 py-3',
+        'border-danger/40 bg-danger-soft flex flex-col items-start gap-2 rounded-[var(--radius-lg)] border px-4 py-3',
         className,
       )}
     >
-      <div className="flex items-center gap-2 text-sm font-semibold text-danger">
+      <div className="text-danger flex items-center gap-2 text-sm font-semibold">
         <AlertCircle className="size-4" aria-hidden="true" />
         {title}
       </div>
-      <p className="text-sm text-ink">{description}</p>
+      <p className="text-ink text-sm">{description}</p>
       {onRetry ? (
         <Button variant="secondary" size="sm" onClick={onRetry}>
           Try again
@@ -77,7 +77,9 @@ export function ErrorState({
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('ap-skeleton rounded-[var(--radius)]', className)} aria-hidden="true" />;
+  return (
+    <div className={cn('ap-skeleton rounded-[var(--radius)]', className)} aria-hidden="true" />
+  );
 }
 
 /** Standard list placeholder while a route segment streams in. */

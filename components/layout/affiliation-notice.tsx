@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils/cn';
  */
 export function AffiliationNotice({ className }: { className?: string }) {
   return (
-    <p className={cn('text-xs text-ink-muted', className)}>
+    <p className={cn('text-ink-muted text-xs', className)}>
       ApplyPilot is an independent planning tool. It is not affiliated with, endorsed by, or
       connected to the Common Application, the Coalition Application, any college, or any other
       admissions organisation. It cannot submit an application on your behalf and never signs in to

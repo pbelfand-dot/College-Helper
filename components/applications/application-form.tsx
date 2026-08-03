@@ -193,7 +193,11 @@ export function ApplicationForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <Field id="testingPlan" label="Your testing plan" error={errors?.testingPlan}>
             {(props) => (
-              <Select {...props} name="testingPlan" defaultValue={application?.testingPlan ?? 'not-decided'}>
+              <Select
+                {...props}
+                name="testingPlan"
+                defaultValue={application?.testingPlan ?? 'not-decided'}
+              >
                 {TESTING_PLANS.map((value) => (
                   <option key={value} value={value}>
                     {testingPlanLabels[value]}
@@ -279,7 +283,9 @@ export function ApplicationForm({
       )}
 
       <Field id="notes" label="Notes" error={errors?.notes}>
-        {(props) => <Textarea {...props} name="notes" rows={3} defaultValue={application?.notes ?? ''} />}
+        {(props) => (
+          <Textarea {...props} name="notes" rows={3} defaultValue={application?.notes ?? ''} />
+        )}
       </Field>
 
       <SubmitButton label={submitLabel} />

@@ -27,13 +27,13 @@ export function DashboardSection({
     <section className={cn('flex flex-col gap-3', className)}>
       <div className="flex items-baseline justify-between gap-4">
         <div>
-          <h2 className="text-sm font-semibold tracking-wide text-ink uppercase">{title}</h2>
-          {description ? <p className="mt-0.5 text-xs text-ink-muted">{description}</p> : null}
+          <h2 className="text-ink text-sm font-semibold tracking-wide uppercase">{title}</h2>
+          {description ? <p className="text-ink-muted mt-0.5 text-xs">{description}</p> : null}
         </div>
         {href ? (
           <Link
             href={href}
-            className="shrink-0 rounded text-xs font-medium text-accent-text underline-offset-4 hover:underline"
+            className="text-accent-text shrink-0 rounded text-xs font-medium underline-offset-4 hover:underline"
           >
             {linkLabel ?? 'View all'}
           </Link>
@@ -60,9 +60,9 @@ export function StatTile({
 }) {
   const content = (
     <>
-      <p className="text-2xl font-semibold tabular-nums text-ink">{value}</p>
-      <p className="mt-0.5 text-xs font-medium text-ink">{label}</p>
-      {hint ? <p className="mt-0.5 text-xs text-ink-muted">{hint}</p> : null}
+      <p className="text-ink text-2xl font-semibold tabular-nums">{value}</p>
+      <p className="text-ink mt-0.5 text-xs font-medium">{label}</p>
+      {hint ? <p className="text-ink-muted mt-0.5 text-xs">{hint}</p> : null}
     </>
   );
 

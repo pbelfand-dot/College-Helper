@@ -15,11 +15,11 @@ export function SupabaseSignInForm() {
 
   if (state?.ok) {
     return (
-      <div className="flex items-start gap-2.5 rounded-[var(--radius-lg)] border border-success/35 bg-success-soft px-4 py-3.5">
-        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />
-        <div className="text-sm text-ink">
+      <div className="border-success/35 bg-success-soft flex items-start gap-2.5 rounded-[var(--radius-lg)] border px-4 py-3.5">
+        <CheckCircle2 className="text-success mt-0.5 size-4 shrink-0" aria-hidden="true" />
+        <div className="text-ink text-sm">
           <p className="font-medium">Check your email.</p>
-          <p className="mt-1 text-ink-muted">
+          <p className="text-ink-muted mt-1">
             If an account exists for that address, a sign-in link is on its way. The link expires
             shortly, so use it soon.
           </p>
@@ -30,7 +30,9 @@ export function SupabaseSignInForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      {state && !state.ok ? <ErrorState title="Could not sign in" description={state.error} /> : null}
+      {state && !state.ok ? (
+        <ErrorState title="Could not sign in" description={state.error} />
+      ) : null}
 
       <Field
         id="email"

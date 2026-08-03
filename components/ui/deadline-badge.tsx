@@ -48,9 +48,7 @@ export function DeadlineBadge({
         ? 'Due tomorrow'
         : `Due in ${days} days`;
 
-  const absolute = allDay
-    ? formatAllDayDeadline(dueAt, timeZone)
-    : formatDeadline(dueAt, timeZone);
+  const absolute = allDay ? formatAllDayDeadline(dueAt, timeZone) : formatDeadline(dueAt, timeZone);
 
   return (
     <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -58,7 +56,7 @@ export function DeadlineBadge({
         <CalendarDays className="size-3" aria-hidden="true" />
         {relative}
       </Badge>
-      {showDate ? <span className="text-xs text-ink-muted">{absolute}</span> : null}
+      {showDate ? <span className="text-ink-muted text-xs">{absolute}</span> : null}
     </span>
   );
 }

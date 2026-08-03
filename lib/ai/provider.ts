@@ -34,12 +34,7 @@ export interface TextRequest {
 }
 
 export type AIFailureReason =
-  | 'not-configured'
-  | 'rate-limited'
-  | 'timeout'
-  | 'invalid-output'
-  | 'refused'
-  | 'unavailable';
+  'not-configured' | 'rate-limited' | 'timeout' | 'invalid-output' | 'refused' | 'unavailable';
 
 export class AIError extends Error {
   readonly reason: AIFailureReason;

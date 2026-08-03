@@ -13,11 +13,17 @@ import { Input, Select } from './input';
  * component is presentation plus accessible labelling.
  */
 
-export function FilterBar({ className, children }: { className?: string; children: React.ReactNode }) {
+export function FilterBar({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div
       className={cn(
-        'flex flex-col gap-3 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-3 sm:flex-row sm:flex-wrap sm:items-end',
+        'border-line bg-surface flex flex-col gap-3 rounded-[var(--radius-lg)] border px-4 py-3 sm:flex-row sm:flex-wrap sm:items-end',
         className,
       )}
     >
@@ -43,12 +49,12 @@ export function SearchField({
 }) {
   return (
     <div className={cn('flex min-w-0 flex-1 flex-col gap-1.5', className)}>
-      <label htmlFor={id} className="text-xs font-medium text-ink-muted">
+      <label htmlFor={id} className="text-ink-muted text-xs font-medium">
         {label}
       </label>
       <div className="relative">
         <Search
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-subtle"
+          className="text-ink-subtle pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
           aria-hidden="true"
         />
         <Input
@@ -64,7 +70,7 @@ export function SearchField({
             type="button"
             onClick={() => onChange('')}
             aria-label="Clear search"
-            className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-ink-subtle transition-colors hover:bg-surface-muted hover:text-ink"
+            className="text-ink-subtle hover:bg-surface-muted hover:text-ink absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 transition-colors"
           >
             <X className="size-3.5" aria-hidden="true" />
           </button>
@@ -93,7 +99,7 @@ export function FilterSelect<T extends string>({
 }) {
   return (
     <div className={cn('flex flex-col gap-1.5 sm:w-48', className)}>
-      <label htmlFor={id} className="text-xs font-medium text-ink-muted">
+      <label htmlFor={id} className="text-ink-muted text-xs font-medium">
         {label}
       </label>
       <Select id={id} value={value} onChange={(event) => onChange(event.target.value as T | 'all')}>
@@ -120,7 +126,7 @@ export function ActiveFilterNotice({
 }) {
   if (shown === total) return null;
   return (
-    <p className="flex items-center gap-2 text-xs text-ink-muted">
+    <p className="text-ink-muted flex items-center gap-2 text-xs">
       <span>
         Showing {shown} of {total}
       </span>

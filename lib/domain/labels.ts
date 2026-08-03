@@ -233,7 +233,8 @@ export const coachModeDescriptions: Record<CoachMode, string> = {
     'Organises what you know about a college and lists what you still need to verify on official sources.',
   'essay-brainstorm': 'Helps you find themes and moments in experiences you describe.',
   'essay-feedback': 'Reads a draft you wrote and gives specific, explained revision notes.',
-  'activity-description': 'Tightens an activity description without adding claims you did not make.',
+  'activity-description':
+    'Tightens an activity description without adding claims you did not make.',
   'deadline-planning': 'Turns your deadlines into a realistic order of work.',
 };
 

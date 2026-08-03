@@ -10,9 +10,9 @@ import { Info } from 'lucide-react';
  */
 export function DemoBanner() {
   return (
-    <div className="border-b border-info/25 bg-info-soft px-4 py-2 text-xs text-ink sm:px-6">
+    <div className="border-info/25 bg-info-soft text-ink border-b px-4 py-2 text-xs sm:px-6">
       <p className="mx-auto flex max-w-6xl items-start gap-2">
-        <Info className="mt-0.5 size-3.5 shrink-0 text-info" aria-hidden="true" />
+        <Info className="text-info mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
         <span>
           <strong className="font-semibold">Demo workspace.</strong> Everything here is sample data
           for a fictional student, stored only for this browser session. Deadlines and requirements

@@ -29,8 +29,8 @@ export function ProgressBar({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <div className="flex items-baseline justify-between gap-3 text-xs">
-        <span className="font-medium text-ink-muted">{label}</span>
-        <span className="tabular-nums text-ink-muted">
+        <span className="text-ink-muted font-medium">{label}</span>
+        <span className="text-ink-muted tabular-nums">
           {percent === null ? 'No required items yet' : `${value}%`}
         </span>
       </div>
@@ -41,7 +41,7 @@ export function ProgressBar({
         aria-valuemax={100}
         aria-label={description}
         className={cn(
-          'w-full overflow-hidden rounded-full bg-surface-muted',
+          'bg-surface-muted w-full overflow-hidden rounded-full',
           size === 'sm' ? 'h-1.5' : 'h-2',
         )}
       >
@@ -53,7 +53,7 @@ export function ProgressBar({
           style={{ width: `${Math.min(Math.max(value, 0), 100)}%` }}
         />
       </div>
-      {hasCounts ? <p className="text-xs text-ink-subtle">{description}</p> : null}
+      {hasCounts ? <p className="text-ink-subtle text-xs">{description}</p> : null}
     </div>
   );
 }

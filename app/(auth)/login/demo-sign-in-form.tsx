@@ -24,7 +24,7 @@ export function DemoSignInForm() {
         <SubmitButton label="Start with an empty workspace" variant="secondary" />
       </form>
 
-      <ul className="mt-1 flex flex-col gap-1.5 text-xs text-ink-muted">
+      <ul className="text-ink-muted mt-1 flex flex-col gap-1.5 text-xs">
         <li>• Your workspace is private to this browser and is not shared with other visitors.</li>
         <li>• It is held in memory only and clears itself after about half a day.</li>
         <li>• You can reset it or export everything from Settings at any time.</li>

@@ -56,7 +56,10 @@ export class SupabaseRepository implements ApplyPilotRepository {
     // Generic, non-identifying server log. No row contents, no user id.
     console.error(`[repository] ${operation} failed (${error.code ?? 'unknown'})`);
     if (error.code === 'PGRST116') throw notFound('That record');
-    throw new RepositoryError('unavailable', 'We could not reach your saved data. Please try again.');
+    throw new RepositoryError(
+      'unavailable',
+      'We could not reach your saved data. Please try again.',
+    );
   }
 
   // --- Profile --------------------------------------------------------------
@@ -239,7 +242,8 @@ export class SupabaseRepository implements ApplyPilotRepository {
     const application = await this.getApplication(userId, input.applicationId);
     if (!application) throw notFound('That application');
 
-    const sortOrder = input.sortOrder ?? (await this.nextRequirementOrder(userId, input.applicationId));
+    const sortOrder =
+      input.sortOrder ?? (await this.nextRequirementOrder(userId, input.applicationId));
     const { data, error } = await this.client
       .from('requirements')
       .insert({
@@ -436,7 +440,8 @@ export class SupabaseRepository implements ApplyPilotRepository {
   async createActivity(userId: string, input: NewActivity): Promise<Activity> {
     const existing = await this.listActivities(userId);
     const sortOrder =
-      input.sortOrder ?? (existing.length > 0 ? Math.max(...existing.map((a) => a.sortOrder)) + 1 : 0);
+      input.sortOrder ??
+      (existing.length > 0 ? Math.max(...existing.map((a) => a.sortOrder)) + 1 : 0);
 
     const { data, error } = await this.client
       .from('activities')

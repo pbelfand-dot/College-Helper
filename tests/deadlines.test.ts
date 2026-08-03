@@ -7,7 +7,14 @@ import {
   groupDeadlines,
   type DeadlineItem,
 } from '@/lib/domain/deadlines';
-import type { Application, College, Essay, Recommender, Scholarship, Task } from '@/lib/domain/types';
+import type {
+  Application,
+  College,
+  Essay,
+  Recommender,
+  Scholarship,
+  Task,
+} from '@/lib/domain/types';
 
 const NOW = new Date('2026-10-01T12:00:00.000Z');
 

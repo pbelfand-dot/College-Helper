@@ -169,24 +169,24 @@ export function CollegeList({ colleges }: { colleges: College[] }) {
             <li key={college.id}>
               <Link
                 href={`/colleges/${college.id}`}
-                className="flex h-full flex-col gap-2.5 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-4 transition-colors hover:border-line-strong"
+                className="border-line bg-surface hover:border-line-strong flex h-full flex-col gap-2.5 rounded-[var(--radius-lg)] border px-4 py-4 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-sm font-semibold text-ink">{college.name}</h3>
+                  <h3 className="text-ink text-sm font-semibold">{college.name}</h3>
                   <ListStatusBadge status={college.listStatus} />
                 </div>
 
                 {college.city || college.stateOrRegion ? (
-                  <p className="flex items-center gap-1.5 text-xs text-ink-muted">
+                  <p className="text-ink-muted flex items-center gap-1.5 text-xs">
                     <MapPin className="size-3" aria-hidden="true" />
                     {[college.city, college.stateOrRegion].filter(Boolean).join(', ')}
                   </p>
                 ) : null}
 
                 {college.fitNotes ? (
-                  <p className="line-clamp-2 text-xs text-ink-muted">{college.fitNotes}</p>
+                  <p className="text-ink-muted line-clamp-2 text-xs">{college.fitNotes}</p>
                 ) : (
-                  <p className="text-xs text-ink-subtle italic">No notes yet</p>
+                  <p className="text-ink-subtle text-xs italic">No notes yet</p>
                 )}
 
                 {college.tags.length > 0 ? (

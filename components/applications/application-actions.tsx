@@ -52,8 +52,8 @@ export function ApplicationActions({
           <DialogHeader>
             <DialogTitle>Edit application</DialogTitle>
             <DialogDescription>
-              Update the round, deadline, status and outcome. ApplyPilot records what you tell it — it
-              never submits anything on your behalf.
+              Update the round, deadline, status and outcome. ApplyPilot records what you tell it —
+              it never submits anything on your behalf.
             </DialogDescription>
           </DialogHeader>
           <DialogBody>
@@ -87,8 +87,8 @@ export function ApplicationActions({
         description={
           <>
             <p>
-              The application to <strong>{collegeName}</strong> and its requirement checklist will be
-              removed.
+              The application to <strong>{collegeName}</strong> and its requirement checklist will
+              be removed.
             </p>
             <p className="mt-2">
               The college stays on your list, and any linked essays are kept — they simply become

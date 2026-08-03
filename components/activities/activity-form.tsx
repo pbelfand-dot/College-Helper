@@ -57,7 +57,12 @@ export function ActivityForm({
 
       <FieldSet legend="What it is">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field id="activity-organization" label="Organisation" required error={errors?.organization}>
+          <Field
+            id="activity-organization"
+            label="Organisation"
+            required
+            error={errors?.organization}
+          >
             {(props) => (
               <Input
                 {...props}
@@ -124,7 +129,7 @@ export function ActivityForm({
           </Field>
         </div>
 
-        <label className="flex items-center gap-2.5 text-sm text-ink">
+        <label className="text-ink flex items-center gap-2.5 text-sm">
           <input
             type="checkbox"
             name="continues"

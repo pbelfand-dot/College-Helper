@@ -30,9 +30,7 @@ export default function AppError({
           Reload the page
         </Button>
       </div>
-      {error.digest ? (
-        <p className="text-xs text-ink-subtle">Reference: {error.digest}</p>
-      ) : null}
+      {error.digest ? <p className="text-ink-subtle text-xs">Reference: {error.digest}</p> : null}
     </div>
   );
 }

@@ -1,13 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import {
-  ArrowUpRight,
-  FileText,
-  GraduationCap,
-  ListChecks,
-  Plus,
-  Users,
-} from 'lucide-react';
+import { ArrowUpRight, FileText, GraduationCap, ListChecks, Plus, Users } from 'lucide-react';
 import { requireProfile } from '@/lib/data/factory';
 import { buildDashboardSummary } from '@/lib/domain/dashboard';
 import { formatDate } from '@/lib/dates/format';
@@ -26,17 +19,25 @@ export default async function DashboardPage() {
   const { session, repository, profile } = await requireProfile();
   const userId = session.userId;
 
-  const [colleges, applications, requirements, essays, activities, recommenders, scholarships, tasks] =
-    await Promise.all([
-      repository.listColleges(userId),
-      repository.listApplications(userId),
-      repository.listRequirements(userId),
-      repository.listEssays(userId),
-      repository.listActivities(userId),
-      repository.listRecommenders(userId),
-      repository.listScholarships(userId),
-      repository.listTasks(userId),
-    ]);
+  const [
+    colleges,
+    applications,
+    requirements,
+    essays,
+    activities,
+    recommenders,
+    scholarships,
+    tasks,
+  ] = await Promise.all([
+    repository.listColleges(userId),
+    repository.listApplications(userId),
+    repository.listRequirements(userId),
+    repository.listEssays(userId),
+    repository.listActivities(userId),
+    repository.listRecommenders(userId),
+    repository.listScholarships(userId),
+    repository.listTasks(userId),
+  ]);
 
   const now = new Date();
   const summary = buildDashboardSummary({
@@ -54,7 +55,11 @@ export default async function DashboardPage() {
 
   const collegeNames = new Map(colleges.map((college) => [college.id, college.name]));
   const isNewWorkspace = colleges.length === 0 && essays.length === 0 && activities.length === 0;
-  const soonest = [...summary.deadlines.overdue, ...summary.deadlines.next7, ...summary.deadlines.next14];
+  const soonest = [
+    ...summary.deadlines.overdue,
+    ...summary.deadlines.next7,
+    ...summary.deadlines.next14,
+  ];
 
   return (
     <div className="flex flex-col gap-9">
@@ -107,7 +112,11 @@ export default async function DashboardPage() {
             <StatTile
               label="Past their deadline"
               value={summary.deadlines.overdue.length}
-              hint={summary.deadlines.overdue.length > 0 ? 'Worth a look — some may be fine' : 'Nothing overdue'}
+              hint={
+                summary.deadlines.overdue.length > 0
+                  ? 'Worth a look — some may be fine'
+                  : 'Nothing overdue'
+              }
               href="/calendar"
               tone={summary.deadlines.overdue.length > 0 ? 'warning' : 'neutral'}
             />
@@ -157,18 +166,18 @@ export default async function DashboardPage() {
                   <li key={entry.application.id}>
                     <Link
                       href={`/applications/${entry.application.id}`}
-                      className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-3.5 transition-colors hover:border-line-strong sm:flex-row sm:items-center sm:justify-between"
+                      className="border-line bg-surface hover:border-line-strong flex flex-col gap-3 rounded-[var(--radius-lg)] border px-4 py-3.5 transition-colors sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-medium text-ink">
+                          <span className="text-ink text-sm font-medium">
                             {collegeNames.get(entry.application.collegeId) ?? 'Application'}
                           </span>
                           <Badge tone="neutral">
                             {applicationRoundLabels[entry.application.applicationRound]}
                           </Badge>
                         </div>
-                        <p className="mt-1 text-xs text-ink-muted">
+                        <p className="text-ink-muted mt-1 text-xs">
                           {entry.missing.length} required{' '}
                           {entry.missing.length === 1 ? 'item' : 'items'} left
                           {entry.application.deadlineAt
@@ -193,7 +202,7 @@ export default async function DashboardPage() {
 
           <div className="grid gap-9 lg:grid-cols-2">
             <DashboardSection title="Essays" href="/essays">
-              <div className="rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-4">
+              <div className="border-line bg-surface rounded-[var(--radius-lg)] border px-4 py-4">
                 <ProgressBar
                   percent={summary.essayProgress.percentFinished}
                   label="Essays marked final"
@@ -206,14 +215,14 @@ export default async function DashboardPage() {
                   <Stat label="Final" value={summary.essayProgress.finished} />
                 </dl>
                 {summary.essaysDueSoon.length > 0 ? (
-                  <div className="mt-4 border-t border-line pt-3">
-                    <p className="text-xs font-medium text-ink">Due within two weeks</p>
+                  <div className="border-line mt-4 border-t pt-3">
+                    <p className="text-ink text-xs font-medium">Due within two weeks</p>
                     <ul className="mt-1.5 flex flex-col gap-1">
                       {summary.essaysDueSoon.slice(0, 3).map((essay) => (
                         <li key={essay.id}>
                           <Link
                             href={`/essays/${essay.id}`}
-                            className="group flex items-center gap-1 text-xs text-ink-muted hover:text-ink"
+                            className="group text-ink-muted hover:text-ink flex items-center gap-1 text-xs"
                           >
                             <span className="truncate">{essay.title}</span>
                             <ArrowUpRight
@@ -230,13 +239,13 @@ export default async function DashboardPage() {
             </DashboardSection>
 
             <DashboardSection title="Activities" href="/activities">
-              <div className="rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-4">
+              <div className="border-line bg-surface rounded-[var(--radius-lg)] border px-4 py-4">
                 <dl className="grid grid-cols-3 gap-3 text-center">
                   <Stat label="On your list" value={summary.activities.total} />
                   <Stat label="No description" value={summary.activities.missingDescription} />
                   <Stat label="Over the limit" value={summary.activities.overLimit} />
                 </dl>
-                <p className="mt-3.5 text-xs text-ink-muted">
+                <p className="text-ink-muted mt-3.5 text-xs">
                   Character limits are yours to set per activity. ApplyPilot does not assume any
                   particular application&rsquo;s current limit.
                 </p>
@@ -261,11 +270,11 @@ export default async function DashboardPage() {
                   description="When you set a follow-up date on a recommender, it will appear here — once, not as a nag."
                 />
               ) : (
-                <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+                <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
                   {summary.recommendationFollowUps.slice(0, 4).map((recommender) => (
                     <li key={recommender.id} className="px-4 py-3">
-                      <p className="text-sm font-medium text-ink">{recommender.name}</p>
-                      <p className="text-xs text-ink-muted">
+                      <p className="text-ink text-sm font-medium">{recommender.name}</p>
+                      <p className="text-ink-muted text-xs">
                         {recommender.organizationOrSubject ?? 'Recommender'}
                         {recommender.followUpAt
                           ? ` · follow up ${formatDate(recommender.followUpAt, profile.timeZone)}`
@@ -285,15 +294,15 @@ export default async function DashboardPage() {
                   description="Colleges appear here when they have no notes yet, or when you last verified them more than 30 days ago."
                 />
               ) : (
-                <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface">
+                <ul className="divide-line border-line bg-surface divide-y overflow-hidden rounded-[var(--radius-lg)] border">
                   {summary.staleResearch.slice(0, 4).map((college) => (
                     <li key={college.id}>
                       <Link
                         href={`/colleges/${college.id}`}
-                        className="block px-4 py-3 transition-colors hover:bg-surface-muted"
+                        className="hover:bg-surface-muted block px-4 py-3 transition-colors"
                       >
-                        <p className="text-sm font-medium text-ink">{college.name}</p>
-                        <p className="text-xs text-ink-muted">
+                        <p className="text-ink text-sm font-medium">{college.name}</p>
+                        <p className="text-ink-muted text-xs">
                           {college.lastVerifiedAt
                             ? `Last verified ${formatDate(college.lastVerifiedAt, profile.timeZone)}`
                             : 'Never marked as verified'}
@@ -314,8 +323,8 @@ export default async function DashboardPage() {
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div>
-      <dt className="text-xs text-ink-muted">{label}</dt>
-      <dd className="text-lg font-semibold tabular-nums text-ink">{value}</dd>
+      <dt className="text-ink-muted text-xs">{label}</dt>
+      <dd className="text-ink text-lg font-semibold tabular-nums">{value}</dd>
     </div>
   );
 }

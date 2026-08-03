@@ -21,17 +21,17 @@ export function DialogContent({
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-950/45 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+      <DialogPrimitive.Overlay className="data-[state=open]:animate-in data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-slate-950/45" />
       <DialogPrimitive.Content
         className={cn(
-          'fixed top-1/2 left-1/2 z-50 flex max-h-[92dvh] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[var(--radius-lg)] border border-line bg-surface shadow-[var(--shadow-raised)]',
+          'border-line bg-surface fixed top-1/2 left-1/2 z-50 flex max-h-[92dvh] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[var(--radius-lg)] border shadow-[var(--shadow-raised)]',
           className,
         )}
         {...props}
       >
         {children}
         <DialogPrimitive.Close
-          className="absolute top-3.5 right-3.5 rounded-[var(--radius)] p-1.5 text-ink-subtle transition-colors hover:bg-surface-muted hover:text-ink"
+          className="text-ink-subtle hover:bg-surface-muted hover:text-ink absolute top-3.5 right-3.5 rounded-[var(--radius)] p-1.5 transition-colors"
           aria-label="Close"
         >
           <X className="size-4" aria-hidden="true" />
@@ -44,7 +44,7 @@ export function DialogContent({
 export function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex flex-col gap-1 border-b border-line px-5 py-4 pr-12', className)}
+      className={cn('border-line flex flex-col gap-1 border-b px-5 py-4 pr-12', className)}
       {...props}
     />
   );
@@ -56,7 +56,7 @@ export function DialogTitle({
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
-      className={cn('text-base font-semibold text-ink', className)}
+      className={cn('text-ink text-base font-semibold', className)}
       {...props}
     />
   );
@@ -66,7 +66,9 @@ export function DialogDescription({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>) {
-  return <DialogPrimitive.Description className={cn('text-sm text-ink-muted', className)} {...props} />;
+  return (
+    <DialogPrimitive.Description className={cn('text-ink-muted text-sm', className)} {...props} />
+  );
 }
 
 export function DialogBody({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -77,7 +79,7 @@ export function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLD
   return (
     <div
       className={cn(
-        'flex flex-col-reverse gap-2 border-t border-line px-5 py-3.5 sm:flex-row sm:justify-end',
+        'border-line flex flex-col-reverse gap-2 border-t px-5 py-3.5 sm:flex-row sm:justify-end',
         className,
       )}
       {...props}

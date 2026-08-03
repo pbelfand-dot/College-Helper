@@ -31,10 +31,7 @@ export class AnthropicAIProvider implements AIProvider {
 
   private getClient(): Anthropic {
     if (!env.ai.anthropicApiKey) {
-      throw new AIError(
-        'not-configured',
-        'AI coaching is not switched on for this installation.',
-      );
+      throw new AIError('not-configured', 'AI coaching is not switched on for this installation.');
     }
     this.client ??= new Anthropic({
       apiKey: env.ai.anthropicApiKey,
@@ -135,18 +132,30 @@ function translateError(error: unknown, requestId: string): AIError {
       );
     }
     if (error.status === 401 || error.status === 403) {
-      return new AIError('not-configured', 'AI coaching is not configured correctly on this server.');
+      return new AIError(
+        'not-configured',
+        'AI coaching is not configured correctly on this server.',
+      );
     }
-    return new AIError('unavailable', 'The coach is unavailable right now. Please try again shortly.');
+    return new AIError(
+      'unavailable',
+      'The coach is unavailable right now. Please try again shortly.',
+    );
   }
 
   if (error instanceof Error && error.name === 'AbortError') {
     console.error(`[ai] request aborted request=${requestId}`);
-    return new AIError('timeout', 'That took too long. Try again, or shorten what you are sending.');
+    return new AIError(
+      'timeout',
+      'That took too long. Try again, or shorten what you are sending.',
+    );
   }
 
   console.error(`[ai] unexpected provider failure request=${requestId}`);
-  return new AIError('unavailable', 'The coach is unavailable right now. Please try again shortly.');
+  return new AIError(
+    'unavailable',
+    'The coach is unavailable right now. Please try again shortly.',
+  );
 }
 
 /**

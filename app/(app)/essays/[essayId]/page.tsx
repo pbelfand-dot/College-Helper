@@ -42,7 +42,7 @@ export default async function EssayDetailPage({
             <EssayStatusBadge status={essay.status} />
             {college ? <Badge tone="neutral">{college.name}</Badge> : null}
             {essay.dueAt ? (
-              <span className="text-sm text-ink-muted">
+              <span className="text-ink-muted text-sm">
                 Your due date: {formatDate(essay.dueAt, profile.timeZone)}
               </span>
             ) : null}
@@ -59,10 +59,12 @@ export default async function EssayDetailPage({
       />
 
       {essay.prompt ? (
-        <section className="rounded-[var(--radius-lg)] border border-line bg-surface px-4 py-3.5">
-          <h2 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">The prompt</h2>
-          <p className="mt-1.5 text-sm whitespace-pre-wrap text-ink">{essay.prompt}</p>
-          <p className="mt-2 text-xs text-ink-subtle">
+        <section className="border-line bg-surface rounded-[var(--radius-lg)] border px-4 py-3.5">
+          <h2 className="text-ink-muted text-xs font-semibold tracking-wide uppercase">
+            The prompt
+          </h2>
+          <p className="text-ink mt-1.5 text-sm whitespace-pre-wrap">{essay.prompt}</p>
+          <p className="text-ink-subtle mt-2 text-xs">
             Check this against the official application site — prompts and limits change between
             years. The limit shown in the editor is the one you entered ({' '}
             {essay.limitType === 'none'
@@ -75,9 +77,9 @@ export default async function EssayDetailPage({
 
       <EssayEditor essay={essay} versions={versions} timeZone={profile.timeZone} />
 
-      <p className="text-xs text-ink-subtle">
-        Status: {essayStatusLabels[essay.status]}. Your writing is stored only in your own workspace,
-        and nothing is sent to an AI model unless you ask for it on a specific request.
+      <p className="text-ink-subtle text-xs">
+        Status: {essayStatusLabels[essay.status]}. Your writing is stored only in your own
+        workspace, and nothing is sent to an AI model unless you ask for it on a specific request.
       </p>
     </div>
   );

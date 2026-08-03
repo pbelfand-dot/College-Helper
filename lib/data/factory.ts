@@ -13,9 +13,7 @@ import type { ApplyPilotRepository } from './repository';
  * deployment from demo storage to Supabase is a configuration change, not a
  * code change.
  */
-export async function getRepositoryForSession(
-  session: Session,
-): Promise<ApplyPilotRepository> {
+export async function getRepositoryForSession(session: Session): Promise<ApplyPilotRepository> {
   if (session.mode === 'demo') {
     if (!session.workspaceId) {
       throw new Error('Demo session is missing its workspace.');

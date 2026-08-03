@@ -115,7 +115,11 @@ export interface ApplyPilotRepository {
   listActivities(userId: string): Promise<Activity[]>;
   getActivity(userId: string, activityId: string): Promise<Activity | null>;
   createActivity(userId: string, input: NewActivity): Promise<Activity>;
-  updateActivity(userId: string, activityId: string, input: Partial<NewActivity>): Promise<Activity>;
+  updateActivity(
+    userId: string,
+    activityId: string,
+    input: Partial<NewActivity>,
+  ): Promise<Activity>;
   deleteActivity(userId: string, activityId: string): Promise<void>;
   /** Persists a whole reordered list in one call so ordering stays consistent. */
   saveActivityOrder(userId: string, orderedIds: string[]): Promise<void>;

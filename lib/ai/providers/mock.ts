@@ -95,11 +95,81 @@ function truncate(text: string, max: number): string {
 /** Content words the student actually used, most frequent first. */
 function keyPhrases(text: string, limit = 6): string[] {
   const stop = new Set([
-    'the','and','that','with','from','this','they','have','been','were','what','when','which','there',
-    'about','would','could','their','them','then','than','into','your','you','are','was','for','but',
-    'not','all','out','one','two','because','after','before','just','like','some','more','most','very',
-    'said','says','told','also','only','over','under','again','still','even','much','many','it','its',
-    'i','a','an','of','to','in','on','at','is','as','my','me','we','he','she','his','her','do','did',
+    'the',
+    'and',
+    'that',
+    'with',
+    'from',
+    'this',
+    'they',
+    'have',
+    'been',
+    'were',
+    'what',
+    'when',
+    'which',
+    'there',
+    'about',
+    'would',
+    'could',
+    'their',
+    'them',
+    'then',
+    'than',
+    'into',
+    'your',
+    'you',
+    'are',
+    'was',
+    'for',
+    'but',
+    'not',
+    'all',
+    'out',
+    'one',
+    'two',
+    'because',
+    'after',
+    'before',
+    'just',
+    'like',
+    'some',
+    'more',
+    'most',
+    'very',
+    'said',
+    'says',
+    'told',
+    'also',
+    'only',
+    'over',
+    'under',
+    'again',
+    'still',
+    'even',
+    'much',
+    'many',
+    'it',
+    'its',
+    'i',
+    'a',
+    'an',
+    'of',
+    'to',
+    'in',
+    'on',
+    'at',
+    'is',
+    'as',
+    'my',
+    'me',
+    'we',
+    'he',
+    'she',
+    'his',
+    'her',
+    'do',
+    'did',
   ]);
   const counts = new Map<string, number>();
   for (const raw of text.toLowerCase().match(/[a-z']{3,}/g) ?? []) {
@@ -233,12 +303,14 @@ function researchResponse({ draft, material }: MockContext) {
       'The admissions page for your specific round.',
       'The department page for the major you named.',
       'The financial aid page and the net price calculator.',
-      draft ? 'Re-read the notes you already wrote and date them.' : 'Start a notes file with dates.',
+      draft
+        ? 'Re-read the notes you already wrote and date them.'
+        : 'Start a notes file with dates.',
     ],
   };
 }
 
-function brainstormResponse({ draft, material }: MockContext) {
+function brainstormResponse({ draft }: MockContext) {
   if (!draft) {
     return {
       possibleThemes: [],
@@ -258,7 +330,9 @@ function brainstormResponse({ draft, material }: MockContext) {
   return {
     possibleThemes: phrases
       .slice(0, 4)
-      .map((phrase) => `Something around "${phrase}" — it appears more than once in what you wrote.`),
+      .map(
+        (phrase) => `Something around "${phrase}" — it appears more than once in what you wrote.`,
+      ),
     reflectionQuestions: [
       'What did you think was true at the start of this, and what did you think by the end?',
       'Who else was there, and what did they see you do?',
@@ -268,7 +342,10 @@ function brainstormResponse({ draft, material }: MockContext) {
     ],
     scenesToExplore: lines
       .slice(0, 4)
-      .map((sentence) => `You mention: "${truncate(sentence, 150)}" — that could be a scene rather than a summary.`),
+      .map(
+        (sentence) =>
+          `You mention: "${truncate(sentence, 150)}" — that could be a scene rather than a summary.`,
+      ),
     tensionsOrChanges: lines
       .filter((sentence) => /\bbut\b|\buntil\b|\bthen\b|\bhowever\b|\bwrong\b/i.test(sentence))
       .slice(0, 4)
@@ -310,7 +387,13 @@ function feedbackResponse({ draft }: MockContext) {
     counts.set(word, (counts.get(word) ?? 0) + 1);
   }
   const repeated = [...counts.entries()]
-    .filter(([word, count]) => count >= 3 && !['that', 'this', 'with', 'from', 'they', 'have', 'were', 'what', 'when', 'been'].includes(word))
+    .filter(
+      ([word, count]) =>
+        count >= 3 &&
+        !['that', 'this', 'with', 'from', 'they', 'have', 'were', 'what', 'when', 'been'].includes(
+          word,
+        ),
+    )
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4)
     .map(([word, count]) => `"${word}" appears ${count} times.`);
@@ -333,7 +416,10 @@ function feedbackResponse({ draft }: MockContext) {
       .map((sentence) => `Concrete and short: "${truncate(sentence, 150)}"`),
     whatIsUnclear: longSentences
       .slice(0, 4)
-      .map((sentence) => `This runs to ${countWords(sentence)} words — a reader may lose the thread: "${truncate(sentence, 150)}"`),
+      .map(
+        (sentence) =>
+          `This runs to ${countWords(sentence)} words — a reader may lose the thread: "${truncate(sentence, 150)}"`,
+      ),
     specificityIssues: vague.slice(0, 6),
     structureObservations: [
       `${lines.length} sentences, averaging ${lines.length > 0 ? Math.round(words / lines.length) : 0} words each.`,
@@ -352,7 +438,9 @@ function feedbackResponse({ draft }: MockContext) {
       .slice(0, 3)
       .map((sentence) => `Consider splitting: "${truncate(sentence, 150)}"`),
     revisionPriorities: [
-      vague.length > 0 ? 'Replace the vague words listed above with the specific thing you mean.' : '',
+      vague.length > 0
+        ? 'Replace the vague words listed above with the specific thing you mean.'
+        : '',
       longSentences.length > 0 ? 'Break up the longest sentences.' : '',
       repeated.length > 0 ? 'Vary the repeated words, or repeat them on purpose.' : '',
       'Read it out loud. It catches what reading silently does not.',
@@ -385,13 +473,17 @@ function activityResponse({ draft }: MockContext) {
     };
   }
 
-  const verbs = (draft.toLowerCase().match(/\b(led|ran|built|wrote|taught|trained|organised|organized|collected|logged|maintained|sorted|coached|designed|repaired|planned|hosted|tutored|managed|recorded|scheduled)\b/g) ?? [])
+  const verbs = (
+    draft
+      .toLowerCase()
+      .match(
+        /\b(led|ran|built|wrote|taught|trained|organised|organized|collected|logged|maintained|sorted|coached|designed|repaired|planned|hosted|tutored|managed|recorded|scheduled)\b/g,
+      ) ?? []
+  )
     .filter((verb, index, all) => all.indexOf(verb) === index)
     .map((verb) => `"${verb}" — supported by what you wrote`);
 
-  const vague = VAGUE_PATTERNS.flatMap(({ pattern, note }) =>
-    pattern.test(draft) ? [note] : [],
-  );
+  const vague = VAGUE_PATTERNS.flatMap(({ pattern, note }) => (pattern.test(draft) ? [note] : []));
 
   // Compressions are pure deletions of the student's own text, never additions.
   const condensed = draft
@@ -426,8 +518,12 @@ function activityResponse({ draft }: MockContext) {
 }
 
 function planResponse({ draft, material }: MockContext) {
-  const lines = material.flatMap((block) => block.split('\n')).filter((line) => line.trim().length > 0);
-  const dated = lines.filter((line) => /\d{4}-\d{2}-\d{2}|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i.test(line));
+  const lines = material
+    .flatMap((block) => block.split('\n'))
+    .filter((line) => line.trim().length > 0);
+  const dated = lines.filter((line) =>
+    /\d{4}-\d{2}-\d{2}|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i.test(line),
+  );
 
   return {
     prioritisedTasks: dated.slice(0, 8).map((line) => truncate(line.trim(), 200)),
@@ -438,7 +534,7 @@ function planResponse({ draft, material }: MockContext) {
     })),
     dependencies: [
       'Recommenders need your materials before they can write anything — that one is not under your control once you hand it over.',
-      'Transcript requests go through your school office, so they run on the school\'s timeline.',
+      "Transcript requests go through your school office, so they run on the school's timeline.",
       'Essays that are shared across applications are worth finishing first.',
     ],
     bufferSuggestions: [

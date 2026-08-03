@@ -27,9 +27,9 @@ export function SendPreview({
   }
 
   return (
-    <div className="rounded-[var(--radius)] border border-line bg-surface-muted px-3 py-2.5">
+    <div className="border-line bg-surface-muted rounded-[var(--radius)] border px-3 py-2.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="flex items-center gap-1.5 text-xs text-ink-muted">
+        <p className="text-ink-muted flex items-center gap-1.5 text-xs">
           <ShieldAlert className="size-3.5 shrink-0" aria-hidden="true" />
           Only what you attach is sent. Nothing else from your workspace goes with it.
         </p>
@@ -40,18 +40,18 @@ export function SendPreview({
       </div>
 
       {open ? (
-        <div className="mt-3 flex flex-col gap-2.5 border-t border-line pt-3">
+        <div className="border-line mt-3 flex flex-col gap-2.5 border-t pt-3">
           {preview === null ? (
-            <p className="text-xs text-ink-muted">Loading the preview…</p>
+            <p className="text-ink-muted text-xs">Loading the preview…</p>
           ) : preview.material.length === 0 ? (
-            <p className="text-xs text-ink-muted">
+            <p className="text-ink-muted text-xs">
               Nothing from your saved work would be attached — only the message you type.
             </p>
           ) : (
             preview.material.map((block) => (
               <div key={block.label}>
-                <p className="text-xs font-medium text-ink">{block.label}</p>
-                <pre className="mt-1 max-h-40 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface px-2.5 py-2 text-xs whitespace-pre-wrap text-ink-muted">
+                <p className="text-ink text-xs font-medium">{block.label}</p>
+                <pre className="border-line bg-surface text-ink-muted mt-1 max-h-40 overflow-y-auto rounded-[var(--radius)] border px-2.5 py-2 text-xs whitespace-pre-wrap">
                   {block.content}
                 </pre>
               </div>
@@ -59,14 +59,14 @@ export function SendPreview({
           )}
 
           {preview?.includesVoiceNotes ? (
-            <p className="text-xs text-ink-muted">
+            <p className="text-ink-muted text-xs">
               Your writing-voice notes are also included, so the coach matches how you sound.
             </p>
           ) : null}
 
-          <p className="text-xs text-ink-subtle">
-            Do not put Social Security numbers, bank details, passwords or anyone else&rsquo;s private
-            information into a coaching request.
+          <p className="text-ink-subtle text-xs">
+            Do not put Social Security numbers, bank details, passwords or anyone else&rsquo;s
+            private information into a coaching request.
           </p>
         </div>
       ) : null}

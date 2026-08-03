@@ -58,7 +58,7 @@ export function ConfirmDialog({
         </DialogHeader>
         <DialogBody>
           <DialogDescription asChild>
-            <div className="text-sm text-ink-muted">{description}</div>
+            <div className="text-ink-muted text-sm">{description}</div>
           </DialogDescription>
         </DialogBody>
         <DialogFooter>

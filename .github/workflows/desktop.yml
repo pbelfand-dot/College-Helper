@@ -1,24 +1,24 @@
 name: Desktop build
 
-# Two ways in.
+# Three ways in, two of which publish a release.
 #
-# Pushing a `v*` tag builds the Windows app and publishes a GitHub Release with
-# the installer attached — that is how a downloadable Setup.exe gets made.
-# `workflow_dispatch` builds the same artifacts without publishing anything, for
-# when you want to check a change packages cleanly.
+#   1. Push a `v*` tag — the normal way to cut a release.
+#   2. Change `.github/release-version` — same result, for anyone whose access
+#      allows pushing branches but not tags. `gh release create` makes the tag
+#      itself, so a pushed tag was never actually required.
+#   3. Run it from the Actions tab — builds the same artifacts and uploads them
+#      to the run without publishing anything, for checking that a change still
+#      packages.
 #
 # Not part of CI: this takes several minutes and produces a few hundred
-# megabytes, neither of which belongs on every push.
+# megabytes. The path filter on (2) is what keeps it off ordinary pushes.
 on:
   push:
     tags:
       - 'v*'
+    paths:
+      - '.github/release-version'
   workflow_dispatch:
-    inputs:
-      installer:
-        description: 'Also build the Setup.exe installer (NSIS)'
-        type: boolean
-        default: true
 
 # Needed to create the release. If this repository's Settings → Actions →
 # General → Workflow permissions is set to read-only, that setting caps this one
@@ -43,6 +43,43 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Decides whether this run publishes, and under what tag, before spending
+      # ten minutes on a build.
+      - name: Work out the release tag
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF_TYPE" = 'tag' ]; then
+            tag="$GITHUB_REF_NAME"
+          elif [ -f .github/release-version ]; then
+            version=$(tr -d '[:space:]' < .github/release-version)
+            tag="v${version#v}"
+          else
+            tag=''
+          fi
+
+          # A manual run never publishes, whatever the marker file says.
+          if [ "$GITHUB_EVENT_NAME" = 'workflow_dispatch' ]; then
+            tag=''
+          fi
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Release tag: ${tag:-(none — artifacts only)}"
+
+      - name: Refuse to reuse an existing release
+        if: steps.release.outputs.tag != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          # Better to fail here than after a ten-minute build, and far better
+          # than silently overwriting a release someone has already downloaded.
+          if gh release view "${{ steps.release.outputs.tag }}" >/dev/null 2>&1; then
+            echo "Release ${{ steps.release.outputs.tag }} already exists. Bump .github/release-version." >&2
+            exit 1
+          fi
+
       - run: npm ci
 
       # The same checks the repository runs everywhere else. A desktop build of
@@ -54,11 +91,9 @@ jobs:
       - name: Build the app and assemble the standalone server
         run: npm run desktop:prepare
 
-      # A tag always builds both, because the installer is the entire point of
-      # tagging. On a manual run the input decides. `inputs.installer` is
-      # undefined on a tag push, so it cannot be relied on there.
+      # A release always builds both, because the installer is the entire point.
       - name: Package
-        run: npx electron-builder --win zip ${{ (github.ref_type == 'tag' || inputs.installer) && '--win nsis' || '' }}
+        run: npx electron-builder --win zip ${{ steps.release.outputs.tag != '' && '--win nsis' || '' }}
         env:
           # Nothing here is code-signed: signing needs a certificate, which this
           # repository deliberately does not carry. Windows SmartScreen will warn
@@ -77,9 +112,10 @@ jobs:
           retention-days: 14
 
       - name: Publish the release
-        if: github.ref_type == 'tag'
+        if: steps.release.outputs.tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.release.outputs.tag }}
         shell: bash
         run: |
           set -euo pipefail
@@ -92,34 +128,31 @@ jobs:
           2. Run it. Windows SmartScreen will say "Windows protected your PC" — choose **More info → Run anyway**.
           3. It installs per-user, so it needs no administrator password, and you can choose the folder.
 
-          Prefer no installer? `ApplyPilot-VERSION-win.zip` is the same app as a folder. Unzip it anywhere and run `ApplyPilot.exe`.
+          Prefer not to install anything? `ApplyPilot-VERSION-win.zip` is the identical app as a plain folder. Unzip it anywhere and run `ApplyPilot.exe`.
 
-          **About that SmartScreen warning:** it is accurate. This installer is not code-signed, because signing requires a purchased certificate. The warning means the publisher is unverified — not that Windows found anything wrong.
+          **About that SmartScreen warning:** it is accurate. This installer is not code-signed, because signing requires a purchased certificate. The warning means the publisher is unverified — not that Windows found anything wrong with the file.
 
           ## What to expect
 
-          - **Your data stays on your computer**, in one file under `%APPDATA%\ApplyPilot`. Nothing is uploaded and there is no account. `File → Open the data folder` shows you where.
+          - **Your work stays on your computer**, in one file under `%APPDATA%\ApplyPilot`. Nothing is uploaded and there is no account. `File → Open the data folder` shows you exactly where.
           - **No sign-in.** The app runs a server bound to `127.0.0.1` that nothing else on the network can reach, and the boundary around your file is your Windows account — the same one your documents already have.
-          - **No internet needed.** The writing coach runs offline and builds its notes from your own text, so it cannot invent an achievement you did not describe.
-          - **Back up your own work.** There is no server keeping a copy. Settings → Export produces a full JSON backup, your essays as Markdown, and your activities as CSV.
+          - **No internet required.** The writing coach runs offline and builds its notes from your own text, so it cannot invent an achievement you did not describe.
+          - **Back up your own work.** There is no server keeping a copy. Settings → Export gives you a full JSON backup, your essays as Markdown, and your activities as CSV.
 
           ApplyPilot is not affiliated with the Common Application or with any college, it cannot submit anything on your behalf, and it does not predict your chances of admission.
 
           ## Known limitation
 
-          This build is produced and packaged on a Windows runner, and the same application is tested end to end on every build — but no human has sat down and clicked through the installer on a Windows desktop. Please report anything that looks wrong.
+          This build is produced and packaged on a Windows runner, and the application is tested end to end on every build — but no human has yet clicked through this installer on a Windows desktop. Please report anything that looks wrong.
           NOTES
           )
-          printf '%s\n' "${notes//VERSION/${GITHUB_REF_NAME#v}}" > notes.md
+          printf '%s\n' "${notes//VERSION/${TAG#v}}" > notes.md
 
-          gh release create "$GITHUB_REF_NAME" \
+          gh release create "$TAG" \
             dist-desktop/*.exe dist-desktop/*.zip \
-            --title "ApplyPilot $GITHUB_REF_NAME" \
+            --target "$GITHUB_SHA" \
+            --title "ApplyPilot $TAG" \
             --notes-file notes.md \
             --prerelease
 
-      - name: Where to find it
-        if: github.ref_type == 'tag'
-        shell: bash
-        run: |
-          echo "Release published at ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+          echo "Published $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$TAG"

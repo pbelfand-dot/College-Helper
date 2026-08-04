@@ -185,17 +185,26 @@ warning means the publisher is unverified — not that Windows found anything wr
 
 ### Cutting a release
 
-Pushing a `v*` tag runs the **Desktop build** workflow (`.github/workflows/desktop.yml`) on a
-Windows runner: lint, typecheck and tests first, then `electron-builder`, then a GitHub Release with
-the installer and the zip attached.
+The **Desktop build** workflow (`.github/workflows/desktop.yml`) runs on a Windows runner: lint,
+typecheck and tests first, then `electron-builder`, then a GitHub Release with the installer and the
+zip attached. Start it either way:
 
 ```bash
-git tag -a v0.1.1 -m "ApplyPilot 0.1.1"
-git push origin v0.1.1
+# The usual way.
+git tag -a v0.1.1 -m "ApplyPilot 0.1.1" && git push origin v0.1.1
+
+# Or, if your access allows pushing branches but not tags:
+echo 0.1.1 > .github/release-version && git commit -am "Release 0.1.1" && git push
 ```
 
-Running the workflow from the Actions tab instead builds the same artifacts and uploads them to the
-run without publishing a release, which is what you want when checking that a change still packages.
+Both end up in the same place, because `gh release create` makes the tag itself — a pushed tag was
+never actually a requirement. The path filter on `.github/release-version` is what keeps the
+workflow off ordinary pushes.
+
+Running it from the Actions tab instead builds the same artifacts and uploads them to the run
+without publishing a release, which is what you want when checking that a change still packages.
+The workflow refuses to overwrite a release that already exists, so bump the version rather than
+re-running a released one.
 
 A Windows runner is not a convenience here. Cross-building from Linux produces a genuine Windows
 `.exe` for the `dir` and `zip` targets, but `nsis` shells out to `makensis` through Wine, so on a

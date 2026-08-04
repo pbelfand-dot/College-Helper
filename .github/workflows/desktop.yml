@@ -58,8 +58,19 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = 'workflow_dispatch' ] || [ ! -f .github/release-version ]; then
             tag=''
           else
-            version=$(tr -d '[:space:]' < .github/release-version)
-            tag="v${version#v}"
+            version=$(grep -vE '^[[:space:]]*(#|$)' .github/release-version | head -1 | tr -d '[:space:]')
+            version="${version#v}"
+
+            # The artifacts are named from package.json and the release notes
+            # point at those filenames, so a mismatch here would publish notes
+            # telling people to download a file that is not there.
+            packaged=$(node -p "require('./package.json').version")
+            if [ "$version" != "$packaged" ]; then
+              echo "release-version says $version but package.json says $packaged." >&2
+              exit 1
+            fi
+
+            tag="v$version"
           fi
 
           echo "tag=$tag" >> "$GITHUB_OUTPUT"

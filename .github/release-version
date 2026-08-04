@@ -1,1 +1,14 @@
+# The version to publish as a GitHub Release.
+#
+# Changing this file and pushing is what starts the Windows desktop build in
+# .github/workflows/desktop.yml. It builds the installer and the zip on a
+# Windows runner and publishes them under this version, tagged `v<version>`.
+#
+# Keep it equal to the version in package.json — the artifacts are named from
+# package.json, and the release notes point at those names by filename. The
+# workflow checks and fails if the two disagree.
+#
+# Blank lines and lines starting with # are ignored; the first line left is the
+# version.
+
 0.1.0

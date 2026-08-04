@@ -64,7 +64,7 @@ export function notFound(what: string): RepositoryError {
 
 export interface ApplyPilotRepository {
   /** Identifies the adapter in diagnostics and in the settings page. */
-  readonly kind: 'demo' | 'supabase';
+  readonly kind: 'demo' | 'file' | 'supabase';
 
   // Profile
   getProfile(userId: string): Promise<UserProfile | null>;

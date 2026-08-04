@@ -68,6 +68,10 @@ export async function signInWithEmail(
 }
 
 export async function signOut(): Promise<void> {
+  // Nothing to sign out of on the desktop: there is one account, it is the
+  // person using the computer, and the button is not rendered there.
+  if (env.storage === 'file') redirect('/dashboard');
+
   const store = await cookies();
 
   if (env.demoMode) {

@@ -21,6 +21,14 @@ export async function getRepositoryForSession(session: Session): Promise<ApplyPi
     return new DemoRepository(session.workspaceId);
   }
 
+  if (session.mode === 'file') {
+    if (!env.dataFile) {
+      throw new Error('File storage is selected but APPLYPILOT_DATA_FILE is not set.');
+    }
+    const { LocalRepository } = await import('./local/local-repository');
+    return new LocalRepository(env.dataFile);
+  }
+
   const { SupabaseRepository } = await import('./supabase/supabase-repository');
   const { createServerSupabaseClient } = await import('./supabase/server-client');
   const client = await createServerSupabaseClient();

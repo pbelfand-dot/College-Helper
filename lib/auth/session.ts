@@ -57,14 +57,38 @@ export function encodeDemoCookie(workspaceId: string): string {
 export interface Session {
   userId: string;
   /** Which storage adapter this session reads and writes through. */
-  mode: 'demo' | 'supabase';
+  mode: 'demo' | 'file' | 'supabase';
   /** Demo only: which in-memory workspace this visitor owns. */
   workspaceId: string | null;
   email: string | null;
 }
 
+/**
+ * The single account the desktop build runs as.
+ *
+ * A fixed id rather than a random one, because it has to match the ids already
+ * written into the data file the last time the app ran.
+ */
+export const LOCAL_USER_ID = '00000000-0000-4000-8000-000000000001';
+
+export const LOCAL_SESSION: Session = {
+  userId: LOCAL_USER_ID,
+  mode: 'file',
+  workspaceId: null,
+  email: null,
+};
+
 /** Returns the active session, or null when nobody is signed in. */
 export async function getSession(): Promise<Session | null> {
+  /*
+   * The desktop build has no sign-in and does not pretend to. The server is
+   * bound to 127.0.0.1, the data file sits in the operating system's per-user
+   * application directory, and the boundary around a student's records is the
+   * one their computer already provides. A login form over a local-only server
+   * would add a password to remember and protect nothing that the OS account
+   * does not already protect.
+   */
+  if (env.storage === 'file') return LOCAL_SESSION;
   if (env.demoMode) return getDemoSession();
   return getSupabaseSession();
 }

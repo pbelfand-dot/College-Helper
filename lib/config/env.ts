@@ -18,6 +18,23 @@ const anthropicApiKey = readString(process.env.ANTHROPIC_API_KEY);
 const forcedDemo = readString(process.env.DEMO_MODE) === 'true';
 const providerOverride = readString(process.env.AI_PROVIDER);
 
+/**
+ * Where records are stored.
+ *
+ * `file` is the desktop build: one student on one machine, everything in a JSON
+ * file the Electron shell points at. It is opt-in through the environment
+ * rather than inferred, because writing to somebody's disk should never be
+ * something a deployment falls into by accident.
+ */
+const dataFile = readString(process.env.APPLYPILOT_DATA_FILE);
+const fileStorage = readString(process.env.APPLYPILOT_STORAGE) === 'file' && Boolean(dataFile);
+
+const storage: 'demo' | 'file' | 'supabase' = fileStorage
+  ? 'file'
+  : forcedDemo || !(supabaseUrl && supabaseAnonKey)
+    ? 'demo'
+    : 'supabase';
+
 export const env = {
   appUrl: readString(process.env.NEXT_PUBLIC_APP_URL) ?? 'http://localhost:3000',
 
@@ -46,14 +63,25 @@ export const env = {
             : ('mock' as const),
   },
 
-  /** Demo mode when explicitly forced, or whenever Supabase is not configured. */
-  demoMode: forcedDemo || !(supabaseUrl && supabaseAnonKey),
+  storage,
+
+  /** Absolute path to the desktop build's data file. Null in every other mode. */
+  dataFile: storage === 'file' ? dataFile : null,
+
+  /**
+   * Demo mode: sample data, nothing durable, no account.
+   *
+   * The desktop build is explicitly *not* demo mode even though it also runs
+   * without credentials — its records are the student's real ones, so the demo
+   * banner and the "reset the sample data" control must stay off.
+   */
+  demoMode: storage === 'demo',
 } as const;
 
 /** Safe to send to the browser: booleans and names only, never key material. */
 export interface PublicRuntimeConfig {
   demoMode: boolean;
-  storageAdapter: 'demo' | 'supabase';
+  storageAdapter: 'demo' | 'file' | 'supabase';
   aiProvider: 'anthropic' | 'mock';
   aiConfigured: boolean;
 }
@@ -61,7 +89,7 @@ export interface PublicRuntimeConfig {
 export function publicRuntimeConfig(): PublicRuntimeConfig {
   return {
     demoMode: env.demoMode,
-    storageAdapter: env.demoMode ? 'demo' : 'supabase',
+    storageAdapter: env.storage,
     aiProvider: env.ai.provider,
     aiConfigured: env.ai.provider === 'anthropic' && Boolean(env.ai.anthropicApiKey),
   };

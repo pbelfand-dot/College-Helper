@@ -91,9 +91,11 @@ export default async function SettingsPage() {
           </li>
           <li>
             <strong className="text-ink">Who can see it:</strong> only you.{' '}
-            {env.demoMode
+            {runtime.storageAdapter === 'demo'
               ? 'In demo mode your workspace lives in server memory, tied to a cookie in this browser, and is discarded after about half a day.'
-              : 'Every database row is tied to your account and protected by row-level security, so another signed-in user cannot read your records even if they knew a record id.'}
+              : runtime.storageAdapter === 'file'
+                ? 'Everything is stored in a single file on this computer. Nothing is uploaded, there is no account, and no server outside this machine ever sees it.'
+                : 'Every database row is tied to your account and protected by row-level security, so another signed-in user cannot read your records even if they knew a record id.'}
           </li>
           <li>
             <strong className="text-ink">Logging:</strong> server logs record that a request
@@ -104,9 +106,19 @@ export default async function SettingsPage() {
         <AffiliationNotice className="mt-4" />
       </Section>
 
-      <Section title="Session">
-        <SignOutButton />
-      </Section>
+      {runtime.storageAdapter === 'file' ? (
+        <Section title="Where your data lives">
+          <p className="text-ink-muted text-sm">
+            This copy of ApplyPilot runs entirely on this computer and stores everything in one
+            file. There is no account to sign in or out of — whoever can use this user account on
+            this machine can open the app. Use the export above to keep a backup somewhere else.
+          </p>
+        </Section>
+      ) : (
+        <Section title="Session">
+          <SignOutButton />
+        </Section>
+      )}
 
       <DangerZone demoMode={env.demoMode} />
     </div>

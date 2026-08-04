@@ -72,14 +72,16 @@ export async function deleteAllData(
     return repositoryFailure(error, 'We could not delete your data.');
   }
 
-  const store = await cookies();
-  if (env.demoMode) {
+  if (env.storage === 'demo') {
+    const store = await cookies();
     store.set(clearedDemoCookie.name, clearedDemoCookie.value, clearedDemoCookie.options);
-  } else {
+  } else if (env.storage === 'supabase') {
     const { createServerSupabaseClient } = await import('@/lib/data/supabase/server-client');
     const supabase = await createServerSupabaseClient();
     await supabase?.auth.signOut();
   }
+  // File storage has no session to end. The data file is now empty, so the
+  // redirect below lands on onboarding.
 
   revalidatePath('/', 'layout');
   redirect('/');

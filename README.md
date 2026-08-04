@@ -122,6 +122,60 @@ What demo mode means in practice:
 - Sign-in by email is disabled; the coach runs offline unless you supply a key.
 - `Settings → Danger zone` can reset the workspace back to its seeded state.
 
+## Desktop app
+
+ApplyPilot can also be built as a desktop application — its own window, no browser, no account, and
+your records saved on your own computer instead of in a database.
+
+It is the same application: an Electron shell starts the ordinary Next.js server on `127.0.0.1`,
+bound to a port the operating system picks, and opens a window onto it. Every feature works the way
+it does on the web, because it _is_ the web build.
+
+### What is different in the desktop build
+
+- **Storage is a file.** Everything lives in `applypilot-data.json` in the OS's per-user application
+  data directory. `Help → About` and `File → Open the data folder` both tell you where.
+  Writes are atomic and flushed when you quit, so closing the window does not lose the sentence you
+  just typed.
+- **There is no sign-in.** There is no account to sign into: the server is loopback-only and the
+  boundary around your file is your computer account. Use a separate OS account or disk encryption
+  if you need a stronger one.
+- **No demo banner, no sample data.** Your first run starts empty and goes to onboarding, because
+  these are your real records.
+- **Links open in your real browser.** Clicking a college's website leaves the app window alone and
+  hands the address to your normal browser, where your bookmarks and password manager are.
+- **No network unless you ask for one.** Without an `ANTHROPIC_API_KEY` in the environment the
+  offline coach runs locally and ApplyPilot makes no outbound requests at all.
+
+### Building it
+
+```bash
+npm ci
+npm run desktop:prepare        # next build, then assemble the standalone server
+npx electron-builder --win     # Windows: a folder, a zip and (with NSIS) Setup.exe
+npx electron-builder --linux   # or --mac
+```
+
+`npm run desktop:dev` runs the shell against an already-prepared build without packaging.
+
+To try the packaged build straight away, `npm run desktop:build` produces
+`dist-desktop/linux-unpacked/`, and `npm run test:e2e:desktop` drives that package with Playwright —
+including quitting the app, reopening it and checking your college list is still there.
+
+### Getting a Windows build
+
+The **Desktop build** workflow in `.github/workflows/desktop.yml` runs `electron-builder` on a
+Windows runner and uploads the zip and the installer as artifacts. Trigger it from the Actions tab.
+That is the recommended route, for two reasons: the runner has NSIS, so it produces a real
+`Setup.exe` rather than a folder, and the executable is built on the operating system it runs on.
+
+Cross-building from Linux works for the `dir` and `zip` targets and produces a genuine Windows
+executable, but `nsis` needs Wine or Windows, so there is no installer that way.
+
+Nothing is code-signed — signing requires a certificate this repository does not carry — so Windows
+SmartScreen will warn the first time you run it. That warning is accurate: it means the publisher is
+unverified, not that the app is safe.
+
 ## Supabase setup
 
 Supabase provides authentication (email magic link) and Postgres persistence.
@@ -291,7 +345,13 @@ More detail in [docs/DATA_PRIVACY.md](docs/DATA_PRIVACY.md).
 - **No college data source.** Every college fact is something you typed. ApplyPilot does not fetch
   deadlines, requirements or costs from anywhere, by design.
 - **No email or notifications.** Deadlines are shown in the app; nothing is sent to you.
-- **The `e2e/` directory is absent**, so the Playwright command has no specs to execute yet.
+- **The Windows package has never been run on Windows.** It is built by `electron-builder` from the
+  same shell, server and config as the Linux package, and the Linux package is driven end to end by
+  `npm run test:e2e:desktop` — window, server boot, navigation guard, and quit/reopen persistence.
+  What is unverified is specifically whether that executable starts on Windows. The GitHub Actions
+  workflow exists so a build can be produced and smoke-tested on a real Windows runner.
+- **The desktop app does not auto-update and is not code-signed.** Signing needs a certificate;
+  updating a copy means downloading a new one.
 
 ## Documentation
 

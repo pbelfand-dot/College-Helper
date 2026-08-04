@@ -85,6 +85,35 @@ With no Supabase credentials configured, ApplyPilot runs a seeded demo workspace
   visitor guessing another visitor's workspace id — and means a server restart invalidates all demo
   cookies, which is the correct outcome for disposable data.
 
+## Desktop mode
+
+The desktop build stores everything in one JSON file on the student's own computer, and its privacy
+story is different enough from the other two modes to be worth stating separately.
+
+- **The file is the whole database.** `applypilot-data.json`, inside the operating system's per-user
+  application data directory — `%APPDATA%\ApplyPilot` on Windows,
+  `~/Library/Application Support/ApplyPilot` on macOS, `~/.config/ApplyPilot` on Linux. The
+  Help menu opens that folder, so nobody has to be told where it is.
+- **Nothing leaves the machine.** There is no account, no sync, no telemetry and no analytics. The
+  server the app runs is bound to `127.0.0.1`, so it is not reachable from the network — not from
+  another computer, not from the same Wi-Fi. The only outbound request ApplyPilot can make is a
+  coaching call, and only if an `ANTHROPIC_API_KEY` is present in the environment; without one the
+  offline coach runs locally and the app makes no network requests at all.
+- **There is no sign-in, and that is deliberate.** The boundary around the file is the operating
+  system account. Anyone who can log into this computer as this user can open ApplyPilot. That is
+  the same protection the student's documents folder has, and adding a password over a loopback-only
+  server would be theatre — it would protect nothing more and would be one more thing to lose.
+  Anyone who needs a stronger boundary should use a separate OS account or full-disk encryption.
+- **Backups are the student's responsibility.** There is no server keeping a copy. The export
+  controls in settings produce a full JSON backup, essays as Markdown, activities as CSV and a
+  readable checklist; putting one somewhere else is the only backup that exists.
+- **Deleting really deletes.** "Delete all of my data" rewrites the file empty immediately rather
+  than on the usual debounce. It does not shred the disk blocks underneath, so a forensic recovery
+  tool may still find remnants — as it would for any deleted file.
+- **A file that cannot be read is never overwritten.** If the JSON is corrupt or truncated,
+  ApplyPilot renames it to `applypilot-data.json.unreadable-<timestamp>` and starts fresh, so the
+  text of somebody's essays is still there to recover by hand.
+
 ## What reaches an AI model
 
 Nothing, unless the student presses a coaching button on a specific request.

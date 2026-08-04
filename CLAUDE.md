@@ -16,6 +16,8 @@ ApplyPilot is an independent college-application planning and coaching tool.
 | Format check       | `npm run format:check`                              |
 | Database setup     | `npm run db:setup` (prints the migration steps)     |
 | Demo-data seed     | Automatic on first request. Reset from `/settings`. |
+| Desktop package    | `npm run desktop:build` (Linux) / `:win` (Windows)  |
+| Desktop app tests  | `xvfb-run -a npm run test:e2e:desktop`              |
 
 Update this section whenever commands change.
 
@@ -72,3 +74,7 @@ A feature is complete only when:
 - Domain calculations are pure functions in `lib/domain/` with unit tests in `tests/`.
 - All persistence goes through `ApplyPilotRepository` (`lib/data/repository.ts`).
 - All model calls go through `AIProvider` (`lib/ai/provider.ts`). Never call a model from the browser.
+- Three storage adapters: `demo` (memory), `file` (desktop), `supabase`. The first two share
+  `BundleRepository`; only the `BundleStore` differs.
+- `desktop/` is the Electron shell and the only CommonJS in the repo. It must not import from
+  `app/`, `components/` or `lib/` — it starts the server and owns the window, nothing more.

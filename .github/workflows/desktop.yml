@@ -1,0 +1,56 @@
+name: Desktop build
+
+# Run by hand from the Actions tab. This is not part of CI: it takes several
+# minutes and produces a few hundred megabytes of artifact, neither of which
+# belongs on every push.
+on:
+  workflow_dispatch:
+    inputs:
+      installer:
+        description: 'Also build the Setup.exe installer (NSIS)'
+        type: boolean
+        default: true
+
+jobs:
+  windows:
+    # A real Windows runner, for two reasons. It is the only way to get an
+    # installer — NSIS needs Windows or Wine, and the development environment
+    # this was written in has neither — and it means the executable is produced
+    # on the operating system it runs on rather than cross-built.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The same checks the repository runs everywhere else. A desktop build of
+      # a broken tree is not worth downloading.
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+
+      - name: Build the app and assemble the standalone server
+        run: npm run desktop:prepare
+
+      - name: Package
+        run: npx electron-builder --win zip ${{ inputs.installer && '--win nsis' || '' }}
+        env:
+          # Nothing here is code-signed: signing needs a certificate, which this
+          # repository deliberately does not carry. Windows SmartScreen will warn
+          # on first run, and that warning is accurate.
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: applypilot-windows
+          path: |
+            dist-desktop/*.zip
+            dist-desktop/*.exe
+          if-no-files-found: error
+          retention-days: 14

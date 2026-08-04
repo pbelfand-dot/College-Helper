@@ -44,10 +44,38 @@ Why the seam exists at all:
 
 - The zero-credential demo is a first-class mode, not a stub. The demo adapter has to be a real
   implementation of the same contract, or demo behaviour and production behaviour drift.
-- A bug where a caller passes the wrong user id fails identically in both adapters, so it shows up
+- A bug where a caller passes the wrong user id fails identically in every adapter, so it shows up
   in local development instead of only in production.
 - Switching a deployment from demo storage to Supabase is a configuration change, not a code
   change.
+- The desktop build was added later and needed durable single-user storage. It became a third
+  adapter and changed nothing in `app/` or `components/` — which is the clearest evidence the seam
+  was worth having.
+
+There are three adapters, and two of them share an implementation:
+
+| Adapter    | Class                | Where records live                           |
+| ---------- | -------------------- | -------------------------------------------- |
+| `demo`     | `DemoRepository`     | Server memory, per workspace cookie, 12h TTL |
+| `file`     | `LocalRepository`    | One JSON file on the machine (desktop build) |
+| `supabase` | `SupabaseRepository` | Postgres, with row-level security            |
+
+`BundleRepository` (`lib/data/bundle-repository.ts`) holds all the query, cascade and ordering logic
+over one in-memory `UserDataBundle`, and knows nothing about durability. A `BundleStore`
+(`lib/data/bundle-store.ts`) supplies the bundle and decides whether changes survive the process:
+`MemoryBundleStore` is a no-op `commit`, `FileBundleStore` writes atomically on a short debounce.
+`DemoRepository` and `LocalRepository` are three-line subclasses that pick a store.
+
+Mutating methods call `this.mutable()` rather than `this.data()`. It returns the same bundle but
+queues a `commit` in a microtask — queued rather than inline because the method body mutates
+synchronously after it returns, so an inline commit would persist the state from _before_ the
+change. That one convention is the whole contract a durable store depends on.
+
+`FileBundleStore` is worth reading for three decisions: the write is a temp file plus `fsync` plus
+`rename`, so a crash cannot leave a half-written file where somebody's essays used to be; exit hooks
+flush on `SIGINT`/`SIGTERM`/`exit`, closing the window between the last keystroke and the debounce;
+and a file it cannot parse is renamed aside rather than overwritten, because a truncated JSON file
+still contains recoverable text.
 
 Input types are derived from the entities rather than restated: `Omit<College, Owned>` where
 `Owned = 'id' | 'userId' | 'createdAt' | 'updatedAt'`. The repository owns those four fields and
@@ -58,22 +86,21 @@ optional, because the repository appends to the end.
 
 The rule lives in two files and is worth stating exactly.
 
-`lib/config/env.ts`:
+`lib/config/env.ts` resolves `env.storage` once, in priority order. File storage wins because it is
+never inferred — it has to be asked for explicitly, since writing to somebody's disk is not
+something a deployment should fall into by accident.
 
-```ts
-demoMode: forcedDemo || !(supabaseUrl && supabaseAnonKey);
-```
+| `APPLYPILOT_STORAGE` + `APPLYPILOT_DATA_FILE` | `DEMO_MODE` | Both Supabase values | Adapter  |
+| --------------------------------------------- | ----------- | -------------------- | -------- |
+| both set                                      | anything    | anything             | file     |
+| not both set                                  | `true`      | anything             | demo     |
+| not both set                                  | unset       | set                  | supabase |
+| not both set                                  | unset       | either missing       | demo     |
 
-where `forcedDemo` is `DEMO_MODE === 'true'` and both Supabase values are trimmed, with empty
-strings treated as unset. So:
-
-| `DEMO_MODE` | `NEXT_PUBLIC_SUPABASE_URL` | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Adapter  |
-| ----------- | -------------------------- | ------------------------------- | -------- |
-| `true`      | anything                   | anything                        | demo     |
-| unset       | set                        | set                             | supabase |
-| unset       | set                        | missing                         | demo     |
-| unset       | missing                    | set                             | demo     |
-| unset       | missing                    | missing                         | demo     |
+All values are trimmed, and empty strings count as unset. `env.demoMode` is now exactly
+`storage === 'demo'` — the desktop build runs without credentials but is emphatically not demo mode,
+because its records are the student's real ones. That single distinction is what keeps the sample-data
+banner and the "reset the demo" control off the desktop app.
 
 Note that `env.demoMode` decides how the **session** is resolved (`lib/auth/session.ts` branches on
 it), and the session's `mode` is what `getRepositoryForSession` then branches on
@@ -81,6 +108,7 @@ it), and the session's `mode` is what `getRepositoryForSession` then branches on
 
 ```ts
 if (session.mode === 'demo') return new DemoRepository(session.workspaceId);
+if (session.mode === 'file') return new LocalRepository(env.dataFile);
 // otherwise: dynamic import of the Supabase adapter + a request-scoped client
 ```
 
@@ -104,11 +132,19 @@ Three helpers wrap the factory so no page has to remember the checks:
   `DEMO_USER_ID`; isolation comes from the workspace id, not the user id.
 - **Supabase:** the user id comes from `supabase.auth.getUser()`, which revalidates the token with
   Supabase rather than trusting the cookie contents.
+- **File (desktop):** a fixed `LOCAL_USER_ID`, with no cookie and no signature. There is no sign-in
+  because there is no account: the server is bound to `127.0.0.1`, the data file sits in the
+  operating system's per-user application directory, and the boundary around it is the one the
+  computer already provides. A password over a loopback-only server would be something else to
+  forget and would protect nothing the OS account does not. The id is fixed rather than random
+  because it has to match the ids already written into the file by the last run.
 
-`middleware.ts` exists only to refresh the Supabase session cookie on navigation, because server
-components cannot write cookies. It performs no authorisation — every page and action re-checks the
-session itself, and treating middleware as the only gate would be a mistake. In demo mode, or when
-Supabase is unconfigured, the middleware is a pass-through.
+`middleware.ts` handles two request-time concerns and no authorisation. It refreshes the Supabase
+session cookie on navigation, because server components cannot write cookies; and in file mode it
+sends `/` and `/login` to `/dashboard`, because the landing page is prerendered at build time and so
+cannot decide at runtime that this copy is the desktop app. Every page and action re-checks the
+session itself — treating middleware as the only gate would be a mistake. In demo and file mode the
+Supabase half is a pass-through.
 
 `app/auth/callback/route.ts` handles the magic-link return: it validates the `code` parameter with
 Zod, restricts `next` to same-origin relative paths (so it cannot become an open redirect),
@@ -264,12 +300,15 @@ lib/
     rate-limit.ts                 RateLimiter interface + in-memory fixed window
     providers/anthropic.ts        forced tool call, re-validated
     providers/mock.ts             deterministic offline coach
-  auth/session.ts                 demo cookie signing, Supabase session resolution
-  config/env.ts                   env parsing, demoMode + provider rules, publicRuntimeConfig
+  auth/session.ts                 demo cookie signing, Supabase + local session resolution
+  config/env.ts                   env parsing, storage + provider rules, publicRuntimeConfig
   data/
     repository.ts                 ApplyPilotRepository, input types, RepositoryError
     factory.ts                    adapter selection, requireWorkspace/requireProfile
-    demo/{seed,store,demo-repository}.ts
+    bundle-repository.ts          all query/cascade/ordering logic over one UserDataBundle
+    bundle-store.ts               read/reset/commit/flush — where a bundle lives
+    demo/{seed,store,memory-store,demo-repository}.ts
+    local/{file-store,local-repository}.ts   atomic JSON file, desktop build
     supabase/{server-client,supabase-repository,mappers,database.types}.ts
   dates/format.ts                 zone-aware formatting; year and zone never dropped
   domain/
@@ -283,8 +322,36 @@ supabase/migrations/
   0001_init.sql                   enums, 13 tables, indexes, updated_at triggers
   0002_policies.sql               RLS enabled + forced, owner-only policies, ownership checks
 
+desktop/
+  main.js                         Electron main: spawns the standalone server, owns the window
+  preload.js                      deliberately empty; the renderer needs no privileged API
+
 scripts/db-setup.mjs              prints migration steps; connects to nothing
+scripts/desktop-prepare.mjs       copies .next/static and public into the standalone server
+electron-builder.yml              packaging: what ships, asar off, Windows icon and NSIS
 tests/                            vitest unit tests + a server-only stub
-middleware.ts                     Supabase cookie refresh only
-playwright.config.ts              e2e config (testDir ./e2e, DEMO_MODE=true, AI_PROVIDER=mock)
+middleware.ts                     Supabase cookie refresh, desktop front-door redirect
+playwright.config.ts              browser e2e (DEMO_MODE=true, AI_PROVIDER=mock)
+playwright.desktop.config.ts      Electron e2e against the packaged app
 ```
+
+## The desktop shell
+
+`desktop/main.js` does not reimplement anything. It asks the OS for a free port, spawns
+`.next/standalone/server.js` on `127.0.0.1` using Electron's own Node (`ELECTRON_RUN_AS_NODE=1` with
+`process.execPath`, so no second copy of Node ships), waits for it to answer, and opens a
+`BrowserWindow` onto it. It sets `APPLYPILOT_STORAGE=file` and points `APPLYPILOT_DATA_FILE` at
+`app.getPath('userData')`. Everything above this line in the document applies unchanged.
+
+What it adds is the containment a local server needs:
+
+| Measure                                             | Why                                                                                |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Loopback bind, OS-assigned port                     | Nothing else on the network can reach it; nothing on the machine can guess it      |
+| `contextIsolation`, `sandbox`, no `nodeIntegration` | The renderer is a browser tab; a bug in a page cannot become file-system access    |
+| Empty preload                                       | The one place privileged APIs get handed to a page, kept deliberately bare         |
+| `will-navigate` + `setWindowOpenHandler`            | A college's website opens in the real browser, not in a window with no address bar |
+| `http:`/`https:` only for `shell.openExternal`      | `file:` and custom schemes can launch programs                                     |
+| Permission requests denied                          | No page here needs a camera, a microphone or a location                            |
+| Single-instance lock                                | Two copies would run two servers over one data file and overwrite each other       |
+| `SIGTERM`, not `SIGKILL`, on quit                   | The file store flushes on the way out; killing outright loses the last edit        |

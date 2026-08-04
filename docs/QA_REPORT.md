@@ -1,11 +1,15 @@
 # QA report
 
-Two review passes over the finished MVP: an application-security and accessibility audit, and an
-admissions-domain and coaching-ethics audit. Both were run against the committed code and a
-production build. This records what was checked, what was found, what was fixed, and what was
-deliberately left alone.
+Two review passes over the finished MVP — an application-security and accessibility audit, and an
+admissions-domain and coaching-ethics audit — both run against the committed code and a production
+build. Findings 7 and 8 were added later, during the desktop build. This records what was checked,
+what was found, what was fixed, and what was deliberately left alone.
 
 Severity is judged by consequence to a student, not by how interesting the bug is.
+
+Worth stating plainly: the most serious accessibility defect in this document, finding 7, was not
+found by either review pass. It was found by running the packaged application from an empty
+workspace — a state the seeded demo meant no test ever reached.
 
 ---
 
@@ -86,6 +90,52 @@ which the formatter leaves alone, with a comment recording why the shape is unus
 Worth noting because this is exactly the class of defect a green test suite does not catch: nothing
 was broken, and the wording of the one banner whose whole job is to say "this is not real data" was
 slightly harder to read.
+
+### 7. Two dialogs opened at once and hid the whole app — **high**, fixed
+
+`components/{colleges,activities,essays,scholarships,recommendations}/*-list.tsx`,
+`components/applications/requirement-checklist.tsx`
+
+Found later, while driving the packaged desktop app rather than by reading the code.
+
+Six list components built the add dialog once into a variable and then rendered that variable in two
+places — the toolbar, and the empty state's `action`. Rendering one `<Dialog>` element twice does not
+share it: React mounts two, and because both read the same `open` state, both opened together. The
+result was two modals stacked on the same coordinates with duplicate field ids — so a `<label for>`
+could focus the wrong copy — and, worse, each dialog marked everything outside itself
+`aria-hidden="true"`. Between the two of them that covered every child of `<body>`, including both
+dialogs. Confirmed in the running app: with the dialog open, `getByRole('button')` matched **nothing
+at all** on the page.
+
+For a screen-reader user the entire application vanished at the moment they tried to add their first
+college.
+
+It survived the original QA pass for a specific reason worth recording: the demo workspace is
+seeded, so the empty-state branch never executed in the e2e suite, and the audit read the toolbar
+path. A desktop user starts from an empty list every single time, which is how the packaged app
+found it in minutes.
+
+The empty state now gets a plain button that opens the one dialog. `e2e/core-flows.spec.ts` covers
+it from an empty workspace across three of the six pages, asserting exactly one `role="dialog"` and
+that its submit button is reachable by role — which it is not when a stray `aria-hidden` covers the
+document.
+
+### 8. The desktop shell — **checked, no findings**
+
+`desktop/main.js`, `desktop/preload.js`
+
+Reviewed against the usual Electron failure modes. The renderer runs with `contextIsolation: true`,
+`sandbox: true`, `nodeIntegration: false` and `webviewTag: false`; the preload is empty, so there is
+no bridge to widen. `will-navigate` and `setWindowOpenHandler` keep the window on the local origin
+and hand anything else to `shell.openExternal`, which is itself restricted to `http:` and `https:`
+so a `file:` or custom-scheme URL cannot launch a program. Permission requests are denied outright.
+The server binds to `127.0.0.1` on a port the OS assigns, so it is neither reachable from the
+network nor guessable by another process. A single-instance lock stops two copies writing over one
+data file, and quit sends `SIGTERM` rather than `SIGKILL` so the store flushes.
+
+Verified by test rather than by inspection alone: `e2e/desktop.spec.ts` clicks an external link and
+asserts both that the window did not navigate **and** that the URL reached `shell.openExternal` — a
+guard that silently swallowed the link would otherwise pass.
 
 ---
 

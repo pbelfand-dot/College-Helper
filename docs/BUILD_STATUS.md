@@ -1,19 +1,21 @@
 # Build status
 
-Last updated at the end of the MVP build.
+Last updated after the desktop build.
 
 ## Checks
 
-| Check            | Command                | Result                            |
-| ---------------- | ---------------------- | --------------------------------- |
-| Format           | `npm run format:check` | passing                           |
-| Lint             | `npm run lint`         | passing, no warnings              |
-| Types            | `npm run typecheck`    | passing, strict mode, no `any`    |
-| Unit tests       | `npm run test`         | 181 passing, 10 files             |
-| End-to-end tests | `npm run test:e2e`     | 17 passing (14 desktop, 3 mobile) |
-| Production build | `npm run build`        | succeeds, 19 routes               |
+| Check             | Command                    | Result                            |
+| ----------------- | -------------------------- | --------------------------------- |
+| Format            | `npm run format:check`     | passing                           |
+| Lint              | `npm run lint`             | passing, no warnings              |
+| Types             | `npm run typecheck`        | passing, strict mode, no `any`    |
+| Unit tests        | `npm run test`             | 192 passing, 11 files             |
+| End-to-end tests  | `npm run test:e2e`         | 18 passing (15 desktop, 3 mobile) |
+| Desktop app tests | `npm run test:e2e:desktop` | 4 passing, against the package    |
+| Production build  | `npm run build`            | succeeds, 19 routes               |
 
-133 TypeScript files across `app/`, `components/` and `lib/`.
+The desktop suite needs a packaged build first (`npm run desktop:build`) and, on a headless machine,
+a display (`xvfb-run -a npm run test:e2e:desktop`).
 
 ## Phases
 
@@ -91,6 +93,19 @@ Domain and security passes were run over the finished application. Findings and 
 `docs/QA_REPORT.md`. The substantive fixes were four colour-contrast failures — including white
 text on the dark-mode primary button at 2.09:1 — and four ambiguous "Download" buttons.
 
+### Phase 8 — Desktop build · done
+
+Added after the MVP, in response to a request for an executable. A third storage adapter (`file`)
+behind the existing `ApplyPilotRepository` seam, and an Electron shell that runs the same standalone
+Next server on loopback. Nothing under `app/` or `components/` changed to accommodate either, which
+is the strongest evidence the seam was worth building.
+
+Driving the packaged app turned up a bug that predated the desktop work: six list components
+rendered the same `<Dialog>` element twice — once in the toolbar, once as the empty state's action —
+so two modals opened together and, between them, marked the entire document `aria-hidden`. The demo
+workspace is seeded, so the empty branch had never run in the e2e suite; a desktop user starts there
+every time. Fixed in all six, with a regression test in `e2e/core-flows.spec.ts`.
+
 ## Known limitations
 
 1. **The Supabase adapter has never run against a live Supabase project.** No credentials were
@@ -106,20 +121,34 @@ text on the dark-mode primary button at 2.09:1 — and four ambiguous "Download"
 
 3. **Demo data is in-memory.** It does not survive a server restart, expires after 12 hours, and is
    capped at 500 concurrent workspaces. That is correct for a disposable demo and wrong for anything
-   else, which is why real use needs Supabase.
+   else, which is why real use needs either Supabase or the desktop build's file storage.
 
-4. **Rate limiting is per-instance.** `InMemoryRateLimiter` counts requests in one process. Behind
+4. **The Windows package has never been run on Windows.** No Windows machine and no Wine were
+   available. `electron-builder --win` does produce a real `ApplyPilot.exe` (PE32+ x86-64, correct
+   version resource and icon) from the same `desktop/main.js`, the same standalone server and the
+   same `electron-builder.yml` as the Linux package — and the Linux package is driven end to end by
+   `npm run test:e2e:desktop`: the window opens, the server boots, first run reaches onboarding, a
+   college is added, the app is **quit and reopened and the college is still there**, and an
+   external link is handed to the system browser rather than navigating the app. What remains
+   unproven is precisely whether that executable starts under Windows. `.github/workflows/desktop.yml`
+   builds and checks it on a `windows-latest` runner for exactly this reason.
+
+   No installer was produced here either: NSIS needs Windows or Wine. The `nsis` block in
+   `electron-builder.yml` is configured and will produce a `Setup.exe` unchanged on a machine that
+   has one.
+
+5. **Rate limiting is per-instance.** `InMemoryRateLimiter` counts requests in one process. Behind
    several instances a user gets the limit multiplied by the instance count. The `RateLimiter`
    interface exists so a shared backend can replace it without touching a caller.
 
-5. **No import.** Export covers four formats; reading a backup back in was listed as optional for the
+6. **No import.** Export covers four formats; reading a backup back in was listed as optional for the
    MVP and is not built.
 
-6. **No notifications.** Reminders are tasks the student sees when they open the app. There is no
+7. **No notifications.** Reminders are tasks the student sees when they open the app. There is no
    email or push, and the UI says so rather than implying a reminder will reach them.
 
-7. **No screenshots in the repository.** Generate them by running `npm run dev` and visiting the
+8. **No screenshots in the repository.** Generate them by running `npm run dev` and visiting the
    routes; the README says the same.
 
-8. **Colleges are user-entered.** ApplyPilot ships no college dataset and no deadline database. It
+9. **Colleges are user-entered.** ApplyPilot ships no college dataset and no deadline database. It
    records what the student tells it and repeatedly points them at official sources.

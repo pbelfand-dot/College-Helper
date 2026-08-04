@@ -17,6 +17,9 @@ Last updated after the desktop build.
 The desktop suite needs a packaged build first (`npm run desktop:build`) and, on a headless machine,
 a display (`xvfb-run -a npm run test:e2e:desktop`).
 
+Packaged sizes: Windows zip ~140 MB, unpacked ~390 MB, of which the ApplyPilot payload is 26 MB and
+the rest is Electron's Chromium runtime.
+
 ## Phases
 
 ### Phase 1 — Foundation · done

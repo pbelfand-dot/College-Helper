@@ -158,6 +158,12 @@ npx electron-builder --linux   # or --mac
 
 `npm run desktop:dev` runs the shell against an already-prepared build without packaging.
 
+The Windows zip is about 140 MB and the unpacked folder about 390 MB. Nearly all of that is the
+Chromium runtime Electron carries — the ApplyPilot half is 26 MB. `desktop:prepare` drops the
+`next/image` optimizer from the traced server before packaging, since nothing in the app renders a
+`next/image` and its libvips binaries are 33 MB of native code for the wrong platform; the script
+checks for `next/image` first and keeps sharp if it ever finds one.
+
 To try the packaged build straight away, `npm run desktop:build` produces
 `dist-desktop/linux-unpacked/`, and `npm run test:e2e:desktop` drives that package with Playwright —
 including quitting the app, reopening it and checking your college list is still there.

@@ -236,3 +236,22 @@ exists precisely so a shared backend can replace it; building one now would be s
   working used the offline coach.
 
 Both are stated as limitations rather than presented as verified.
+
+---
+
+## Windows release verification — 2026-08-04
+
+The first Windows Actions run passed install, lint, strict TypeScript, 192 unit tests and the Next.js
+production build, then failed after producing both desktop artifacts because electron-builder detected
+CI and attempted an implicit publish without `GH_TOKEN`. Packaging now uses `--publish never`; the
+explicit authenticated `gh release create` step remains the only publisher.
+
+Running the packaged-app suite against `ApplyPilot.exe` then exposed a Windows-only durability bug:
+Windows terminates a child process immediately for `SIGTERM`, so the server could be killed inside its
+150 ms debounced file-save window. The shell now holds the quit briefly on Windows, lets the pending
+synchronous save finish, then terminates the server. The desktop test selects the current platform's
+binary, and the Windows workflow runs it before uploading or releasing artifacts.
+
+Verified locally on Windows: installer and zip packaging completed without an implicit publish; all
+four packaged-app tests passed, including adding a college, quitting, reopening, reading the college
+from disk, and handing an external URL to the system browser.

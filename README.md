@@ -164,9 +164,10 @@ Chromium runtime Electron carries — the ApplyPilot half is 26 MB. `desktop:pre
 `next/image` and its libvips binaries are 33 MB of native code for the wrong platform; the script
 checks for `next/image` first and keeps sharp if it ever finds one.
 
-To try the packaged build straight away, `npm run desktop:build` produces
-`dist-desktop/linux-unpacked/`, and `npm run test:e2e:desktop` drives that package with Playwright —
-including quitting the app, reopening it and checking your college list is still there.
+To try the packaged build straight away, `npm run desktop:build` produces the Linux package and
+`npm run desktop:build:win` produces the Windows package. `npm run test:e2e:desktop` selects the
+current platform's unpacked app and drives it with Playwright — including quitting, reopening, and
+checking that the college list is still there.
 
 ### Installing on Windows
 
@@ -186,8 +187,8 @@ warning means the publisher is unverified — not that Windows found anything wr
 ### Cutting a release
 
 The **Desktop build** workflow (`.github/workflows/desktop.yml`) runs on a Windows runner: lint,
-typecheck and tests first, then `electron-builder`, then a GitHub Release with the installer and the
-zip attached.
+typecheck and unit tests first, then `electron-builder`, a packaged-app smoke test, and finally a
+GitHub Release with the installer and zip attached.
 
 **Actions tab → Desktop build → Run workflow.** Leave _Publish a GitHub Release_ ticked. Untick it
 to build the artifacts without releasing, which is what you want when checking that a change still
@@ -387,11 +388,10 @@ More detail in [docs/DATA_PRIVACY.md](docs/DATA_PRIVACY.md).
 - **No college data source.** Every college fact is something you typed. ApplyPilot does not fetch
   deadlines, requirements or costs from anywhere, by design.
 - **No email or notifications.** Deadlines are shown in the app; nothing is sent to you.
-- **The Windows package has never been run on Windows.** It is built by `electron-builder` from the
-  same shell, server and config as the Linux package, and the Linux package is driven end to end by
-  `npm run test:e2e:desktop` — window, server boot, navigation guard, and quit/reopen persistence.
-  What is unverified is specifically whether that executable starts on Windows. The GitHub Actions
-  workflow exists so a build can be produced and smoke-tested on a real Windows runner.
+- **The Windows installer has not had a human walkthrough.** The unpacked Windows executable is
+  launched and driven end to end by `npm run test:e2e:desktop` — window, server boot, navigation
+  guard, and quit/reopen persistence — and the Windows workflow now runs that suite before upload.
+  The unsigned NSIS install/uninstall screens still need a manual Windows walkthrough.
 - **The desktop app does not auto-update and is not code-signed.** Signing needs a certificate;
   updating a copy means downloading a new one.
 

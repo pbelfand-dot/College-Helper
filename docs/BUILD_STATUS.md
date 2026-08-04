@@ -126,15 +126,12 @@ every time. Fixed in all six, with a regression test in `e2e/core-flows.spec.ts`
    capped at 500 concurrent workspaces. That is correct for a disposable demo and wrong for anything
    else, which is why real use needs either Supabase or the desktop build's file storage.
 
-4. **The Windows package has never been run on Windows.** No Windows machine and no Wine were
-   available. `electron-builder --win` does produce a real `ApplyPilot.exe` (PE32+ x86-64, correct
-   version resource and icon) from the same `desktop/main.js`, the same standalone server and the
-   same `electron-builder.yml` as the Linux package — and the Linux package is driven end to end by
-   `npm run test:e2e:desktop`: the window opens, the server boots, first run reaches onboarding, a
-   college is added, the app is **quit and reopened and the college is still there**, and an
-   external link is handed to the system browser rather than navigating the app. What remains
-   unproven is precisely whether that executable starts under Windows. `.github/workflows/desktop.yml`
-   builds and checks it on a `windows-latest` runner for exactly this reason.
+4. **The Windows installer still needs a human walkthrough.** The unpacked `ApplyPilot.exe` now runs
+   the packaged-app Playwright suite on Windows: the window opens, the server boots, first run reaches
+   onboarding, a college is added, the app is **quit and reopened and the college is still there**,
+   and an external link is handed to the system browser rather than navigating the app. The Actions
+   workflow runs that suite before it uploads or releases the artifacts. The unsigned NSIS install,
+   upgrade and uninstall screens have not been manually exercised.
 
    The Wine requirement was tested rather than assumed, because it looked like it might be wrong:
    electron-builder ships a Linux-native toolchain and had already patched the PE and set the icon

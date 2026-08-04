@@ -121,6 +121,11 @@ jobs:
           # on first run, and that warning is accurate.
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
+      # Launches the packaged Windows executable, writes a college, quits, and
+      # confirms the next process reads it back from disk.
+      - name: Smoke-test the packaged app
+        run: npm run test:e2e:desktop
+
       # Uploaded whichever way the workflow was started, so there is always
       # something to download even if publishing the release fails.
       - uses: actions/upload-artifact@v4

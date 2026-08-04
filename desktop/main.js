@@ -23,6 +23,11 @@ const path = require('node:path');
 const HOST = '127.0.0.1';
 /** The server is local and starts cold; be patient before giving up on it. */
 const SERVER_START_TIMEOUT_MS = 60_000;
+/**
+ * Windows terminates a child process immediately for `SIGTERM`, so give the
+ * server's 150 ms debounced file write time to finish before stopping it.
+ */
+const WINDOWS_WRITE_DRAIN_MS = 500;
 
 /** Where the packaged app's files live, in both a build and a dev run. */
 const rootDir = app.isPackaged
@@ -33,6 +38,8 @@ const serverEntry = path.join(rootDir, '.next', 'standalone', 'server.js');
 let serverProcess = null;
 let mainWindow = null;
 let serverOrigin = null;
+let shutdownStarted = false;
+let shutdownReady = false;
 
 /**
  * Only one copy may run: two of them would open two servers over one data file
@@ -295,12 +302,27 @@ function buildMenu() {
 
 app.on('window-all-closed', () => app.quit());
 
-app.on('before-quit', () => {
+app.on('before-quit', (event) => {
+  if (shutdownReady) return;
+
+  event.preventDefault();
   app.isQuitting = true;
-  stopServer();
+  if (shutdownStarted) return;
+  shutdownStarted = true;
+  void drainServerAndQuit();
 });
 
 app.on('quit', stopServer);
+
+async function drainServerAndQuit() {
+  if (process.platform === 'win32' && serverProcess) {
+    await delay(WINDOWS_WRITE_DRAIN_MS);
+  }
+
+  stopServer();
+  shutdownReady = true;
+  app.quit();
+}
 
 /**
  * Stops the server politely.

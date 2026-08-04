@@ -12,21 +12,21 @@ import { join } from 'node:path';
 /**
  * The packaged desktop app, driven as a real application.
  *
- * These tests run against the **Linux** package. The Windows package is built
- * from the same `desktop/main.js`, the same server and the same
- * `electron-builder.yml`, so what is proven here is everything except "does
- * this PE start on Windows" — which cannot be proven without a Windows machine
- * and is not claimed anywhere.
+ * These tests run against the package for the current operating system. The
+ * Windows Actions build therefore launches the exact PE it is about to upload.
  *
  * The test that matters is the third one. Everything else in ApplyPilot already
  * had coverage before the desktop build existed; "quit the app and your college
  * list is still there" is the one behaviour the desktop build was added for.
  */
 
-const APP_BINARY = join(process.cwd(), 'dist-desktop', 'linux-unpacked', 'applypilot');
+const APP_BINARY =
+  process.platform === 'win32'
+    ? join(process.cwd(), 'dist-desktop', 'win-unpacked', 'ApplyPilot.exe')
+    : join(process.cwd(), 'dist-desktop', 'linux-unpacked', 'applypilot');
 
 /** One data directory for the whole file, so tests 2 and 3 share a workspace. */
-let userDataDir: string;
+let userDataDir: string | null = null;
 
 test.beforeAll(() => {
   if (!existsSync(APP_BINARY)) {
@@ -36,7 +36,7 @@ test.beforeAll(() => {
 });
 
 test.afterAll(() => {
-  rmSync(userDataDir, { recursive: true, force: true });
+  if (userDataDir) rmSync(userDataDir, { recursive: true, force: true });
 });
 
 async function launch(): Promise<{ app: ElectronApplication; window: Page }> {
@@ -60,6 +60,7 @@ async function launch(): Promise<{ app: ElectronApplication; window: Page }> {
 }
 
 function dataFile(): string {
+  if (!userDataDir) throw new Error('Desktop test data directory was not initialized.');
   return join(userDataDir, 'applypilot-data.json');
 }
 

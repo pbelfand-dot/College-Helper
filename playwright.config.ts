@@ -24,11 +24,17 @@ export default defineConfig({
     video: 'off',
     screenshot: 'off',
   },
+  /*
+   * `desktop.spec.ts` belongs to the packaged Electron app and runs from
+   * `playwright.desktop.config.ts` instead. Launching it from here would start
+   * Electron with no display and no packaged build — it exists in this repo but
+   * it is not a browser test.
+   */
   projects: [
     {
       name: 'desktop',
       use: { ...devices['Desktop Chrome'], launchOptions: { executablePath } },
-      testIgnore: /mobile\.spec\.ts/,
+      testIgnore: [/mobile\.spec\.ts/, /desktop\.spec\.ts/],
     },
     {
       name: 'mobile',

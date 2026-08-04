@@ -23,6 +23,16 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    /*
+     * The Electron main process and its preload run as CommonJS: the package
+     * has no `"type": "module"`, and the main process is the one place in this
+     * repository that is not bundled by Next. `require` is the correct call
+     * there, not a leftover.
+     */
+    files: ['desktop/**/*.js'],
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -30,6 +40,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // Packaged desktop builds: 370MB of Electron runtime, none of it ours.
+    'dist-desktop/**',
   ]),
 ]);
 

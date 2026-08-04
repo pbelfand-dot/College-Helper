@@ -112,7 +112,23 @@ export function CollegeList({ colleges }: { colleges: College[] }) {
           icon={GraduationCap}
           title="No colleges saved yet"
           description="Add the first college you are curious about. You can start with just a name and add notes, links and deadlines as you go."
-          action={addButton}
+          action={
+            /*
+             * A plain button, not a second copy of the dialog above.
+             *
+             * Rendering one `<Dialog>` element in two places does not share it:
+             * React mounts two, both read the same `open` state, so both open at
+             * once. Two modals then stack with duplicate field ids, and each one
+             * marks everything outside itself `aria-hidden` — between them that
+             * covers the whole document, including the other dialog. The empty
+             * state is exactly where a new student starts, so this was the first
+             * thing a screen reader would fail to announce.
+             */
+            <Button onClick={() => setOpen(true)}>
+              <Plus aria-hidden="true" />
+              Add your first college
+            </Button>
+          }
         />
       </div>
     );

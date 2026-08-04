@@ -165,7 +165,23 @@ export function RecommenderList({
           icon={Users}
           title="No recommenders yet"
           description="Add the people you plan to ask — a teacher who knows your work, a counsellor, a supervisor. Then record when you asked and when each letter is due, and link them to applications from the application page."
-          action={addButton}
+          action={
+            /*
+             * A plain button, not a second copy of the dialog above.
+             *
+             * Rendering one `<Dialog>` element in two places does not share it:
+             * React mounts two, both read the same `open` state, so both open at
+             * once. Two modals then stack with duplicate field ids, and each one
+             * marks everything outside itself `aria-hidden` — between them that
+             * covers the whole document, including the other dialog. The empty
+             * state is exactly where a new student starts, so this was the first
+             * thing a screen reader would fail to announce.
+             */
+            <Button onClick={() => setAddOpen(true)}>
+              <Plus aria-hidden="true" />
+              Add your first recommender
+            </Button>
+          }
         />
       </div>
     );

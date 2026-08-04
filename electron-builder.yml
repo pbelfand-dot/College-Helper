@@ -1,0 +1,72 @@
+appId: com.applypilot.desktop
+productName: ApplyPilot
+copyright: ApplyPilot
+
+directories:
+  output: dist-desktop
+  buildResources: build
+
+# What goes inside the app.
+#
+# `.next/standalone` is the traced server Next produces for `output: 'standalone'`
+# — it carries its own pruned node_modules, so the project's full 800 MB tree is
+# deliberately not listed here. `.next/static` and `public` have to be copied
+# into the standalone directory before packaging (see `npm run desktop:prepare`);
+# they are listed again below only so a stale build cannot silently ship without
+# them.
+files:
+  - desktop/**/*
+  - .next/standalone/**/*
+  - .next/static/**/*
+  - public/**/*
+  - package.json
+  # electron-builder copies the project's production dependencies by default.
+  # Here that is 440 MB of duplicate: everything the server actually needs is
+  # already inside `.next/standalone/node_modules`, traced down to the files
+  # that get imported, and the desktop main process itself uses nothing but
+  # Electron and Node built-ins.
+  - '!node_modules'
+  - '!**/*.map'
+  - '!**/*.ts'
+  - '!**/.DS_Store'
+
+# The Next server `require`s its traced files and reads static assets straight
+# off disk. An asar archive is the classic way to make that work in development
+# and fail once packaged, and the space it would save is not worth the class of
+# bug it invites. Leaving it off also puts the app at `resources/app/`, which is
+# where `desktop/main.js` looks.
+asar: false
+
+# Nothing here compiles against Node's ABI, so there is nothing to rebuild and
+# no reason to spend a minute on it every build.
+npmRebuild: false
+
+win:
+  # Already a real multi-size icon with a 256x256 entry, which is what Windows
+  # wants. No separate asset to keep in sync.
+  icon: app/favicon.ico
+  target:
+    - dir
+    - zip
+    - nsis
+
+# Configured but not built on Linux: NSIS needs Wine. On Windows, or on any
+# machine with Wine installed, `electron-builder --win nsis` produces a
+# Setup.exe from this section unchanged.
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: ApplyPilot
+
+linux:
+  category: Education
+  target:
+    - dir
+
+mac:
+  category: public.app-category.education
+  target:
+    - dir

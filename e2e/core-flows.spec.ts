@@ -280,3 +280,37 @@ test('rejects invalid input with a visible message', async ({ page }) => {
 
   await expect(page.getByText('Enter a full link starting with http')).toBeVisible();
 });
+
+test('opens exactly one dialog from an empty list', async ({ page }) => {
+  /*
+   * Regression test. The empty state used to render the same `<Dialog>` element
+   * a second time, which mounts a second dialog sharing the same open state.
+   * Both opened together, stacking two modals with duplicate field ids, and
+   * each marked everything outside itself `aria-hidden` — so between them the
+   * whole document, including the dialogs, vanished from the accessibility
+   * tree. That is the first screen a new student sees, which is what made it
+   * worth a test rather than a quiet fix.
+   */
+  await enterDemo(page, 'empty');
+
+  await page.getByLabel('What should we call you?').fill('Sam');
+  await page.getByRole('button', { name: 'Save and open my dashboard' }).click();
+  await page.waitForURL('**/dashboard');
+
+  for (const [path, trigger, submit] of [
+    ['/colleges', 'Add your first college', 'Add to my list'],
+    ['/activities', 'Add your first activity', 'Add activity'],
+    ['/essays', 'Start your first essay', 'Create essay'],
+  ] as const) {
+    await page.goto(path);
+    await page.getByRole('button', { name: trigger }).click();
+
+    // One dialog, and it is reachable by role — which it is not when a stray
+    // `aria-hidden` covers the document.
+    await expect(page.getByRole('dialog')).toHaveCount(1);
+    await expect(page.getByRole('button', { name: submit })).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+  }
+});

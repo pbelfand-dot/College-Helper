@@ -187,24 +187,31 @@ warning means the publisher is unverified — not that Windows found anything wr
 
 The **Desktop build** workflow (`.github/workflows/desktop.yml`) runs on a Windows runner: lint,
 typecheck and tests first, then `electron-builder`, then a GitHub Release with the installer and the
-zip attached. Cutting one means bumping a file:
+zip attached.
+
+**Actions tab → Desktop build → Run workflow.** Leave _Publish a GitHub Release_ ticked. Untick it
+to build the artifacts without releasing, which is what you want when checking that a change still
+packages.
+
+Pushing a change to `.github/release-version` does the same thing, if your pushes generate Actions
+events:
 
 ```bash
 echo 0.1.1 > .github/release-version
 git commit -am "Release 0.1.1" && git push
 ```
 
-A version file rather than a `v*` tag, for two reasons. Under `on.push`, a `tags` filter _excludes_
-branch pushes rather than adding to them, and tags and branches cannot be given different path
-filters — so accepting both would mean starting a Windows runner on every push to every branch and
-deciding afterwards. And `gh release create` makes the tag itself from the target commit, so a
-pushed tag was never a requirement for getting one. The release is still tagged `v0.1.1`; the tag is
-just created at the far end rather than pushed.
+Either route reads the version from that file and tags the release `v<version>` — `gh release
+create` makes the tag itself from the target commit, so a pushed tag is never required. That matters
+because some access can push branches but not tags.
 
-Running the workflow from the Actions tab instead builds the same artifacts and uploads them to the
-run without publishing anything, which is what you want when checking that a change still packages.
-It refuses to overwrite a release that already exists, so bump the version rather than re-running a
-released one.
+It is not a `v*` tag trigger, incidentally, because under `on.push` a `tags` filter _excludes_
+branch pushes rather than adding to them, and tags and branches cannot be given separate path
+filters; accepting both would mean starting a Windows runner on every push to every branch.
+
+The workflow refuses to overwrite a release that already exists, and fails if
+`.github/release-version` and `package.json` disagree — the artifacts are named from `package.json`
+and the release notes point at those filenames. Bump both together.
 
 A Windows runner is not a convenience here. Cross-building from Linux produces a genuine Windows
 `.exe` for the `dir` and `zip` targets, but `nsis` shells out to `makensis` through Wine, so on a

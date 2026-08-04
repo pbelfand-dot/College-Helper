@@ -1,27 +1,34 @@
 name: Desktop build
 
-# Two ways in.
+# Two ways in, and either can publish.
 #
-#   1. Change `.github/release-version` and push. That publishes a release under
-#      the version in the file.
-#   2. Run it from the Actions tab. That builds the same artifacts and uploads
-#      them to the run without publishing anything, for checking that a change
-#      still packages.
+#   1. Run it from the Actions tab. Leave "Publish a GitHub Release" ticked and
+#      it builds the installer and publishes it. Untick to just check that a
+#      change still packages.
+#   2. Change `.github/release-version` and push.
 #
-# The version file rather than a `v*` tag, for two reasons. Under `on.push`, a
-# `tags` filter *excludes* branch pushes rather than adding to them, and there is
-# no way to give tags and branches different path filters — so a workflow that
-# accepted both would have to start a runner on every push to every branch and
-# decide afterwards. And `gh release create` creates the tag itself from a target
-# commit, so a pushed tag was never actually required to get one.
+# Both take the version from `.github/release-version` and tag the release
+# `v<version>`; `gh release create` makes the tag itself from the target commit,
+# so a pushed tag is never required — which matters, because some access can
+# push branches but not tags.
 #
-# Not part of CI: this takes several minutes and produces a few hundred
+# Not a `v*` tag trigger, incidentally: under `on.push`, a `tags` filter
+# *excludes* branch pushes rather than adding to them, and tags and branches
+# cannot be given separate path filters, so accepting both would mean starting a
+# Windows runner on every push to every branch.
+#
+# Not part of CI either: this takes several minutes and produces a few hundred
 # megabytes. The path filter is what keeps it off ordinary pushes.
 on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish a GitHub Release with the installer attached'
+        type: boolean
+        default: true
   push:
     paths:
       - '.github/release-version'
-  workflow_dispatch:
 
 # Needed to create the release. If this repository's Settings → Actions →
 # General → Workflow permissions is set to read-only, that setting caps this one
@@ -51,11 +58,14 @@ jobs:
       - name: Work out the release tag
         id: release
         shell: bash
+        env:
+          # Empty string on a push, "true"/"false" on a manual run.
+          PUBLISH_INPUT: ${{ inputs.publish }}
         run: |
           set -euo pipefail
-          # A manual run never publishes, whatever the version file says:
-          # checking that a change packages should not mint a release.
-          if [ "$GITHUB_EVENT_NAME" = 'workflow_dispatch' ] || [ ! -f .github/release-version ]; then
+          # A manual run publishes unless the box was unticked; a version-file
+          # push always does. Either way there has to be a version to publish.
+          if [ "$PUBLISH_INPUT" = 'false' ] || [ ! -f .github/release-version ]; then
             tag=''
           else
             version=$(grep -vE '^[[:space:]]*(#|$)' .github/release-version | head -1 | tr -d '[:space:]')

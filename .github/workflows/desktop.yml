@@ -1,21 +1,24 @@
 name: Desktop build
 
-# Three ways in, two of which publish a release.
+# Two ways in.
 #
-#   1. Push a `v*` tag — the normal way to cut a release.
-#   2. Change `.github/release-version` — same result, for anyone whose access
-#      allows pushing branches but not tags. `gh release create` makes the tag
-#      itself, so a pushed tag was never actually required.
-#   3. Run it from the Actions tab — builds the same artifacts and uploads them
-#      to the run without publishing anything, for checking that a change still
-#      packages.
+#   1. Change `.github/release-version` and push. That publishes a release under
+#      the version in the file.
+#   2. Run it from the Actions tab. That builds the same artifacts and uploads
+#      them to the run without publishing anything, for checking that a change
+#      still packages.
+#
+# The version file rather than a `v*` tag, for two reasons. Under `on.push`, a
+# `tags` filter *excludes* branch pushes rather than adding to them, and there is
+# no way to give tags and branches different path filters — so a workflow that
+# accepted both would have to start a runner on every push to every branch and
+# decide afterwards. And `gh release create` creates the tag itself from a target
+# commit, so a pushed tag was never actually required to get one.
 #
 # Not part of CI: this takes several minutes and produces a few hundred
-# megabytes. The path filter on (2) is what keeps it off ordinary pushes.
+# megabytes. The path filter is what keeps it off ordinary pushes.
 on:
   push:
-    tags:
-      - 'v*'
     paths:
       - '.github/release-version'
   workflow_dispatch:
@@ -50,18 +53,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$GITHUB_REF_TYPE" = 'tag' ]; then
-            tag="$GITHUB_REF_NAME"
-          elif [ -f .github/release-version ]; then
+          # A manual run never publishes, whatever the version file says:
+          # checking that a change packages should not mint a release.
+          if [ "$GITHUB_EVENT_NAME" = 'workflow_dispatch' ] || [ ! -f .github/release-version ]; then
+            tag=''
+          else
             version=$(tr -d '[:space:]' < .github/release-version)
             tag="v${version#v}"
-          else
-            tag=''
-          fi
-
-          # A manual run never publishes, whatever the marker file says.
-          if [ "$GITHUB_EVENT_NAME" = 'workflow_dispatch' ]; then
-            tag=''
           fi
 
           echo "tag=$tag" >> "$GITHUB_OUTPUT"

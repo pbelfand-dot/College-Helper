@@ -187,24 +187,24 @@ warning means the publisher is unverified — not that Windows found anything wr
 
 The **Desktop build** workflow (`.github/workflows/desktop.yml`) runs on a Windows runner: lint,
 typecheck and tests first, then `electron-builder`, then a GitHub Release with the installer and the
-zip attached. Start it either way:
+zip attached. Cutting one means bumping a file:
 
 ```bash
-# The usual way.
-git tag -a v0.1.1 -m "ApplyPilot 0.1.1" && git push origin v0.1.1
-
-# Or, if your access allows pushing branches but not tags:
-echo 0.1.1 > .github/release-version && git commit -am "Release 0.1.1" && git push
+echo 0.1.1 > .github/release-version
+git commit -am "Release 0.1.1" && git push
 ```
 
-Both end up in the same place, because `gh release create` makes the tag itself — a pushed tag was
-never actually a requirement. The path filter on `.github/release-version` is what keeps the
-workflow off ordinary pushes.
+A version file rather than a `v*` tag, for two reasons. Under `on.push`, a `tags` filter _excludes_
+branch pushes rather than adding to them, and tags and branches cannot be given different path
+filters — so accepting both would mean starting a Windows runner on every push to every branch and
+deciding afterwards. And `gh release create` makes the tag itself from the target commit, so a
+pushed tag was never a requirement for getting one. The release is still tagged `v0.1.1`; the tag is
+just created at the far end rather than pushed.
 
-Running it from the Actions tab instead builds the same artifacts and uploads them to the run
-without publishing a release, which is what you want when checking that a change still packages.
-The workflow refuses to overwrite a release that already exists, so bump the version rather than
-re-running a released one.
+Running the workflow from the Actions tab instead builds the same artifacts and uploads them to the
+run without publishing anything, which is what you want when checking that a change still packages.
+It refuses to overwrite a release that already exists, so bump the version rather than re-running a
+released one.
 
 A Windows runner is not a convenience here. Cross-building from Linux produces a genuine Windows
 `.exe` for the `dir` and `zip` targets, but `nsis` shells out to `makensis` through Wine, so on a

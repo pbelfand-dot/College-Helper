@@ -168,19 +168,39 @@ To try the packaged build straight away, `npm run desktop:build` produces
 `dist-desktop/linux-unpacked/`, and `npm run test:e2e:desktop` drives that package with Playwright —
 including quitting the app, reopening it and checking your college list is still there.
 
-### Getting a Windows build
+### Installing on Windows
 
-The **Desktop build** workflow in `.github/workflows/desktop.yml` runs `electron-builder` on a
-Windows runner and uploads the zip and the installer as artifacts. Trigger it from the Actions tab.
-That is the recommended route, for two reasons: the runner has NSIS, so it produces a real
-`Setup.exe` rather than a folder, and the executable is built on the operating system it runs on.
+Download `ApplyPilot-Setup-<version>.exe` from the [Releases page][releases] and run it. Windows
+SmartScreen will say "Windows protected your PC" — choose **More info → Run anyway**. It installs
+per-user, so it asks for no administrator password and lets you pick the folder.
 
-Cross-building from Linux works for the `dir` and `zip` targets and produces a genuine Windows
-executable, but `nsis` needs Wine or Windows, so there is no installer that way.
+If you would rather not install anything, `ApplyPilot-<version>-win.zip` on the same page is the
+identical app as a plain folder: unzip it anywhere and run `ApplyPilot.exe`.
 
-Nothing is code-signed — signing requires a certificate this repository does not carry — so Windows
-SmartScreen will warn the first time you run it. That warning is accurate: it means the publisher is
-unverified, not that the app is safe.
+That SmartScreen warning is accurate and worth taking at face value. The installer is not
+code-signed, because signing needs a purchased certificate this repository does not carry. The
+warning means the publisher is unverified — not that Windows found anything wrong with the file.
+
+[releases]: https://github.com/pbelfand-dot/College-Helper/releases
+
+### Cutting a release
+
+Pushing a `v*` tag runs the **Desktop build** workflow (`.github/workflows/desktop.yml`) on a
+Windows runner: lint, typecheck and tests first, then `electron-builder`, then a GitHub Release with
+the installer and the zip attached.
+
+```bash
+git tag -a v0.1.1 -m "ApplyPilot 0.1.1"
+git push origin v0.1.1
+```
+
+Running the workflow from the Actions tab instead builds the same artifacts and uploads them to the
+run without publishing a release, which is what you want when checking that a change still packages.
+
+A Windows runner is not a convenience here. Cross-building from Linux produces a genuine Windows
+`.exe` for the `dir` and `zip` targets, but `nsis` shells out to `makensis` through Wine, so on a
+machine without Wine the installer step fails with `spawn wine ENOENT` — there is no installer that
+way.
 
 ## Supabase setup
 

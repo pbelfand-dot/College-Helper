@@ -1,9 +1,18 @@
 name: Desktop build
 
-# Run by hand from the Actions tab. This is not part of CI: it takes several
-# minutes and produces a few hundred megabytes of artifact, neither of which
-# belongs on every push.
+# Two ways in.
+#
+# Pushing a `v*` tag builds the Windows app and publishes a GitHub Release with
+# the installer attached — that is how a downloadable Setup.exe gets made.
+# `workflow_dispatch` builds the same artifacts without publishing anything, for
+# when you want to check a change packages cleanly.
+#
+# Not part of CI: this takes several minutes and produces a few hundred
+# megabytes, neither of which belongs on every push.
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       installer:
@@ -11,12 +20,19 @@ on:
         type: boolean
         default: true
 
+# Needed to create the release. If this repository's Settings → Actions →
+# General → Workflow permissions is set to read-only, that setting caps this one
+# and the release step will 403 — the artifacts still upload either way.
+permissions:
+  contents: write
+
 jobs:
   windows:
     # A real Windows runner, for two reasons. It is the only way to get an
-    # installer — NSIS needs Windows or Wine, and the development environment
-    # this was written in has neither — and it means the executable is produced
-    # on the operating system it runs on rather than cross-built.
+    # installer — NSIS genuinely does need Wine or Windows, confirmed by trying
+    # it on Linux and watching makensis fail with `spawn wine ENOENT` — and it
+    # means the executable is produced on the operating system it runs on rather
+    # than cross-built.
     runs-on: windows-latest
 
     steps:
@@ -30,7 +46,7 @@ jobs:
       - run: npm ci
 
       # The same checks the repository runs everywhere else. A desktop build of
-      # a broken tree is not worth downloading.
+      # a broken tree is not worth downloading, and a release of one even less.
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
@@ -38,14 +54,19 @@ jobs:
       - name: Build the app and assemble the standalone server
         run: npm run desktop:prepare
 
+      # A tag always builds both, because the installer is the entire point of
+      # tagging. On a manual run the input decides. `inputs.installer` is
+      # undefined on a tag push, so it cannot be relied on there.
       - name: Package
-        run: npx electron-builder --win zip ${{ inputs.installer && '--win nsis' || '' }}
+        run: npx electron-builder --win zip ${{ (github.ref_type == 'tag' || inputs.installer) && '--win nsis' || '' }}
         env:
           # Nothing here is code-signed: signing needs a certificate, which this
           # repository deliberately does not carry. Windows SmartScreen will warn
           # on first run, and that warning is accurate.
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
+      # Uploaded whichever way the workflow was started, so there is always
+      # something to download even if publishing the release fails.
       - uses: actions/upload-artifact@v4
         with:
           name: applypilot-windows
@@ -54,3 +75,51 @@ jobs:
             dist-desktop/*.exe
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          notes=$(cat <<'NOTES'
+          ApplyPilot for Windows — an independent college application planner that runs entirely on your own computer.
+
+          ## Install
+
+          1. Download `ApplyPilot-Setup-VERSION.exe` below.
+          2. Run it. Windows SmartScreen will say "Windows protected your PC" — choose **More info → Run anyway**.
+          3. It installs per-user, so it needs no administrator password, and you can choose the folder.
+
+          Prefer no installer? `ApplyPilot-VERSION-win.zip` is the same app as a folder. Unzip it anywhere and run `ApplyPilot.exe`.
+
+          **About that SmartScreen warning:** it is accurate. This installer is not code-signed, because signing requires a purchased certificate. The warning means the publisher is unverified — not that Windows found anything wrong.
+
+          ## What to expect
+
+          - **Your data stays on your computer**, in one file under `%APPDATA%\ApplyPilot`. Nothing is uploaded and there is no account. `File → Open the data folder` shows you where.
+          - **No sign-in.** The app runs a server bound to `127.0.0.1` that nothing else on the network can reach, and the boundary around your file is your Windows account — the same one your documents already have.
+          - **No internet needed.** The writing coach runs offline and builds its notes from your own text, so it cannot invent an achievement you did not describe.
+          - **Back up your own work.** There is no server keeping a copy. Settings → Export produces a full JSON backup, your essays as Markdown, and your activities as CSV.
+
+          ApplyPilot is not affiliated with the Common Application or with any college, it cannot submit anything on your behalf, and it does not predict your chances of admission.
+
+          ## Known limitation
+
+          This build is produced and packaged on a Windows runner, and the same application is tested end to end on every build — but no human has sat down and clicked through the installer on a Windows desktop. Please report anything that looks wrong.
+          NOTES
+          )
+          printf '%s\n' "${notes//VERSION/${GITHUB_REF_NAME#v}}" > notes.md
+
+          gh release create "$GITHUB_REF_NAME" \
+            dist-desktop/*.exe dist-desktop/*.zip \
+            --title "ApplyPilot $GITHUB_REF_NAME" \
+            --notes-file notes.md \
+            --prerelease
+
+      - name: Where to find it
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          echo "Release published at ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}"

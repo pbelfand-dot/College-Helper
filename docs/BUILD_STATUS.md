@@ -136,9 +136,15 @@ every time. Fixed in all six, with a regression test in `e2e/core-flows.spec.ts`
    unproven is precisely whether that executable starts under Windows. `.github/workflows/desktop.yml`
    builds and checks it on a `windows-latest` runner for exactly this reason.
 
-   No installer was produced here either: NSIS needs Windows or Wine. The `nsis` block in
-   `electron-builder.yml` is configured and will produce a `Setup.exe` unchanged on a machine that
-   has one.
+   The Wine requirement was tested rather than assumed, because it looked like it might be wrong:
+   electron-builder ships a Linux-native toolchain and had already patched the PE and set the icon
+   natively. It is not wrong. Both NSIS archives download fine here and then `makensis` dies with
+   `spawn wine ENOENT`, so a Windows runner really is the only route to an installer.
+
+   Pushing a `v*` tag runs that workflow and publishes a GitHub Release with the installer attached.
+   An installer built that way is produced on the operating system it runs on, which is a real
+   improvement over cross-building — but it still is not the same as a person double-clicking it on
+   a Windows desktop, and it should not be described as if it were.
 
 5. **Rate limiting is per-instance.** `InMemoryRateLimiter` counts requests in one process. Behind
    several instances a user gets the limit multiplied by the instance count. The `RateLimiter`

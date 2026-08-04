@@ -45,15 +45,19 @@ win:
   # Already a real multi-size icon with a 256x256 entry, which is what Windows
   # wants. No separate asset to keep in sync.
   icon: app/favicon.ico
+  # Default names carry spaces, which become %20 in a release download URL.
+  artifactName: ${productName}-${version}-win.${ext}
   target:
     - dir
     - zip
     - nsis
 
-# Configured but not built on Linux: NSIS needs Wine. On Windows, or on any
-# machine with Wine installed, `electron-builder --win nsis` produces a
-# Setup.exe from this section unchanged.
+# Built only on Windows. NSIS really does need Wine on Linux — confirmed by
+# running it here, where makensis dies with `spawn wine ENOENT` after the NSIS
+# binaries download fine. The `Desktop build` workflow uses a windows-latest
+# runner for exactly this reason; everything else in this file cross-builds.
 nsis:
+  artifactName: ${productName}-Setup-${version}.${ext}
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true

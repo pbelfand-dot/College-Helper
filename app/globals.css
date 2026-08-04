@@ -19,16 +19,20 @@
 
     --ap-text: 215 28% 17%;
     --ap-text-muted: 215 16% 42%;
-    --ap-text-subtle: 215 14% 50%;
+    --ap-text-subtle: 215 14% 45%;
     --ap-text-inverted: 0 0% 100%;
 
     --ap-border: 214 20% 88%;
-    --ap-border-strong: 214 18% 74%;
+    --ap-border-strong: 214 18% 58%;
 
     --ap-accent: 184 68% 28%;
     --ap-accent-hover: 184 68% 23%;
     --ap-accent-soft: 184 55% 94%;
     --ap-accent-text: 184 70% 22%;
+    /* Text drawn on top of the accent fill. Light mode's accent is dark, so
+       white reads at 5.69:1; dark mode's accent is light, where white would be
+       2.09:1 and fails. */
+    --ap-accent-contrast: 0 0% 100%;
 
     --ap-success: 152 56% 27%;
     --ap-success-soft: 152 50% 94%;
@@ -36,6 +40,7 @@
     --ap-warning-soft: 38 92% 93%;
     --ap-danger: 0 68% 41%;
     --ap-danger-soft: 0 78% 96%;
+    --ap-danger-contrast: 0 0% 100%;
     --ap-info: 218 62% 40%;
     --ap-info-soft: 216 90% 96%;
 
@@ -62,12 +67,13 @@
     --ap-text-inverted: 222 40% 10%;
 
     --ap-border: 218 20% 25%;
-    --ap-border-strong: 218 18% 40%;
+    --ap-border-strong: 218 18% 46%;
 
     --ap-accent: 180 62% 48%;
     --ap-accent-hover: 180 62% 56%;
     --ap-accent-soft: 187 45% 18%;
     --ap-accent-text: 180 62% 74%;
+    --ap-accent-contrast: 222 40% 10%;
 
     --ap-success: 152 48% 56%;
     --ap-success-soft: 155 35% 17%;
@@ -75,6 +81,8 @@
     --ap-warning-soft: 34 40% 18%;
     --ap-danger: 0 76% 70%;
     --ap-danger-soft: 0 35% 20%;
+    /* White on the lighter dark-mode red is 2.78:1; near-black is 6.57:1. */
+    --ap-danger-contrast: 0 40% 10%;
     --ap-info: 214 82% 72%;
     --ap-info-soft: 216 40% 20%;
 
@@ -103,6 +111,7 @@
   --color-accent-hover: hsl(var(--ap-accent-hover));
   --color-accent-soft: hsl(var(--ap-accent-soft));
   --color-accent-text: hsl(var(--ap-accent-text));
+  --color-accent-contrast: hsl(var(--ap-accent-contrast));
 
   --color-success: hsl(var(--ap-success));
   --color-success-soft: hsl(var(--ap-success-soft));
@@ -110,6 +119,7 @@
   --color-warning-soft: hsl(var(--ap-warning-soft));
   --color-danger: hsl(var(--ap-danger));
   --color-danger-soft: hsl(var(--ap-danger-soft));
+  --color-danger-contrast: hsl(var(--ap-danger-contrast));
   --color-info: hsl(var(--ap-info));
   --color-info-soft: hsl(var(--ap-info-soft));
 

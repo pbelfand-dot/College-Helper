@@ -129,8 +129,9 @@ export function RequirementChecklist({
             Requirement checklist
           </h2>
           <p className="text-ink-muted mt-0.5 max-w-prose text-xs">
-            You control this list. Progress below is completed required items divided by total
-            required items — nothing else goes into it.
+            You control this list. Confirm each item on the college&rsquo;s own site — requirements
+            differ between colleges and change between years. Progress below is completed required
+            items divided by total required items, and nothing else goes into it.
           </p>
         </div>
         {addButton}

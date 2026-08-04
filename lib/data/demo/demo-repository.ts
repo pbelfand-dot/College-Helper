@@ -720,11 +720,18 @@ export class DemoRepository implements ApplyPilotRepository {
     });
   }
 
-  async deleteAllUserData(): Promise<void> {
+  /*
+   * These two take `userId` to match the interface even though the demo
+   * adapter scopes by workspace: a demo workspace holds exactly one user, so
+   * clearing the workspace and clearing that user's data are the same act.
+   * Keeping the signature identical means callers cannot tell the adapters
+   * apart, which is the point of the seam.
+   */
+  async deleteAllUserData(_userId: string): Promise<void> {
     clearWorkspace(this.workspaceId);
   }
 
-  async resetDemoData(): Promise<void> {
+  async resetDemoData(_userId: string): Promise<void> {
     resetWorkspace(this.workspaceId);
   }
 }

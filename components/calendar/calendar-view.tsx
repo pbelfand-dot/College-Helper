@@ -255,7 +255,7 @@ export function CalendarView({
                           className={cn(
                             'text-xs tabular-nums',
                             day.isToday
-                              ? 'bg-accent flex size-5 items-center justify-center rounded-full font-semibold text-white'
+                              ? 'bg-accent text-accent-contrast flex size-5 items-center justify-center rounded-full font-semibold'
                               : day.inMonth
                                 ? 'text-ink'
                                 : 'text-ink-subtle',

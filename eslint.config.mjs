@@ -5,6 +5,24 @@ import nextTs from 'eslint-config-next/typescript';
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    rules: {
+      /*
+       * A leading underscore marks a parameter that exists to satisfy an
+       * interface rather than because the implementation needs it — for
+       * example the demo repository's `userId`, which is kept so both storage
+       * adapters present an identical signature.
+       */
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

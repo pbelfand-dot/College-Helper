@@ -112,7 +112,9 @@ jobs:
 
       # A release always builds both, because the installer is the entire point.
       - name: Package
-        run: npx electron-builder --win zip ${{ steps.release.outputs.tag != '' && '--win nsis' || '' }}
+        # electron-builder detects CI and otherwise tries to publish implicitly.
+        # Publishing is owned by the explicit, authenticated step below.
+        run: npx electron-builder --win zip ${{ steps.release.outputs.tag != '' && '--win nsis' || '' }} --publish never
         env:
           # Nothing here is code-signed: signing needs a certificate, which this
           # repository deliberately does not carry. Windows SmartScreen will warn
